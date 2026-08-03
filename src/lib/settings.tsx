@@ -1,7 +1,8 @@
 /* eslint-disable react-refresh/only-export-components */
 import * as React from "react";
 
-export type PaletteId = "crimson" | "ocean" | "forest" | "violet" | "amber";
+export type PaletteId =
+  "crimson" | "ocean" | "forest" | "violet" | "amber" | "matrix" | "gruvbox";
 
 export interface Palette {
   id: PaletteId;
@@ -68,6 +69,30 @@ export const PALETTES: Palette[] = [
       "--typer-wrong": "oklch(0.55 0.18 25)",
       "--typer-wrong-dim": "oklch(0.68 0.12 25)",
       "--typer-extra": "oklch(0.48 0.16 25)",
+    },
+  },
+  {
+    id: "matrix",
+    name: "Matrix",
+    vars: {
+      "--primary": "oklch(0.62 0.15 140)",
+      "--ring": "oklch(0.62 0.15 140)",
+      "--typer-caret": "oklch(0.62 0.15 140)",
+      "--typer-wrong": "oklch(0.58 0.2 30)",
+      "--typer-wrong-dim": "oklch(0.68 0.12 30)",
+      "--typer-extra": "oklch(0.5 0.16 30)",
+    },
+  },
+  {
+    id: "gruvbox",
+    name: "Gruvbox",
+    vars: {
+      "--primary": "oklch(0.66 0.13 55)",
+      "--ring": "oklch(0.66 0.13 55)",
+      "--typer-caret": "oklch(0.66 0.13 55)",
+      "--typer-wrong": "oklch(0.58 0.2 25)",
+      "--typer-wrong-dim": "oklch(0.68 0.12 25)",
+      "--typer-extra": "oklch(0.5 0.16 25)",
     },
   },
 ];
