@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -51,97 +52,101 @@
   --radius: 0.5rem;
 
   /* Core surface – neutral light gray */
-  --background:          oklch(0.95 0 0);         /* #f2f2f2 – clean light gray */
-  --foreground:          oklch(0.16 0 0);          /* near-black */
+  --background: oklch(0.95 0 0); /* #f2f2f2 – clean light gray */
+  --foreground: oklch(0.16 0 0); /* near-black */
 
-  --card:                oklch(0.98 0 0);          /* near-white */
-  --card-foreground:     oklch(0.16 0 0);
+  --card: oklch(0.98 0 0); /* near-white */
+  --card-foreground: oklch(0.16 0 0);
 
-  --popover:             oklch(0.99 0 0);
-  --popover-foreground:  oklch(0.16 0 0);
+  --popover: oklch(0.99 0 0);
+  --popover-foreground: oklch(0.16 0 0);
 
   /* Primary – crimson accent */
-  --primary:             oklch(0.52 0.22 22);      /* deep crimson */
-  --primary-foreground:  oklch(0.97 0 0);
+  --primary: oklch(0.52 0.22 22); /* deep crimson */
+  --primary-foreground: oklch(0.97 0 0);
 
   /* Secondary / muted */
-  --secondary:           oklch(0.90 0 0);          /* slightly darker gray */
-  --secondary-foreground:oklch(0.16 0 0);
+  --secondary: oklch(0.9 0 0); /* slightly darker gray */
+  --secondary-foreground: oklch(0.16 0 0);
 
-  --muted:               oklch(0.91 0 0);
-  --muted-foreground:    oklch(0.50 0 0);          /* medium gray */
+  --muted: oklch(0.91 0 0);
+  --muted-foreground: oklch(0.5 0 0); /* medium gray */
 
-  --accent:              oklch(0.91 0 0);
-  --accent-foreground:   oklch(0.16 0 0);
+  --accent: oklch(0.91 0 0);
+  --accent-foreground: oklch(0.16 0 0);
 
-  --destructive:         oklch(0.52 0.22 22);
+  --destructive: oklch(0.52 0.22 22);
   --destructive-foreground: oklch(0.97 0 0);
 
-  --border:              oklch(0.86 0 0);          /* visible gray border */
-  --input:               oklch(0.86 0 0);
-  --ring:                oklch(0.52 0.22 22);
+  --border: oklch(0.86 0 0); /* visible gray border */
+  --input: oklch(0.86 0 0);
+  --ring: oklch(0.52 0.22 22);
 
-  --sidebar:             oklch(0.92 0 0);
-  --sidebar-foreground:  oklch(0.16 0 0);
-  --sidebar-primary:     oklch(0.52 0.22 22);
+  --sidebar: oklch(0.92 0 0);
+  --sidebar-foreground: oklch(0.16 0 0);
+  --sidebar-primary: oklch(0.52 0.22 22);
   --sidebar-primary-foreground: oklch(0.97 0 0);
-  --sidebar-accent:      oklch(0.91 0 0);
+  --sidebar-accent: oklch(0.91 0 0);
   --sidebar-accent-foreground: oklch(0.16 0 0);
-  --sidebar-border:      oklch(0.86 0 0);
-  --sidebar-ring:        oklch(0.52 0.22 22);
+  --sidebar-border: oklch(0.86 0 0);
+  --sidebar-ring: oklch(0.52 0.22 22);
 
   /* ── Typing-specific tokens ── */
-  --typer-correct:       oklch(0.18 0 0);          /* correctly typed – very dark */
-  --typer-wrong:         oklch(0.52 0.25 22);      /* incorrectly typed – vivid crimson */
-  --typer-wrong-dim:     oklch(0.68 0.14 22);      /* completed word with errors (border) */
-  --typer-untyped:       oklch(0.65 0 0);          /* not yet typed – medium gray */
-  --typer-extra:         oklch(0.48 0.22 25);      /* extra chars – reddish */
-  --typer-caret:         oklch(0.52 0.22 22);      /* blinking cursor – matches primary */
-  --typer-word-border:   oklch(0.75 0 0);          /* underline on current word – subtle gray */
+  --typer-correct: oklch(0.18 0 0); /* correctly typed – very dark */
+  --typer-wrong: oklch(0.52 0.25 22); /* incorrectly typed – vivid crimson */
+  --typer-wrong-dim: oklch(
+    0.68 0.14 22
+  ); /* completed word with errors (border) */
+  --typer-untyped: oklch(0.5 0 0); /* not yet typed – medium gray (AA) */
+  --typer-extra: oklch(0.48 0.22 25); /* extra chars – reddish */
+  --typer-caret: oklch(0.52 0.22 22); /* blinking cursor – matches primary */
+  --typer-word-border: oklch(
+    0.68 0 0
+  ); /* underline on current word – subtle gray */
 
   /* ── Typer layout tokens ── */
-  --typer-font-size:     1.5rem;
-  --typer-line-height:   2.75rem;
-  --typer-word-gap-x:    0.7rem;
+  --typer-font-size: clamp(1.5rem, 0.75rem + 2.2vw, 2.125rem);
+  --typer-line-height: clamp(2.75rem, 1.5rem + 3.8vw, 3.875rem);
+  --typer-word-gap-x: 0.7rem;
 }
 
 /* Dark mode – original crimson/dark palette */
 .dark {
-  --background:          oklch(0.13 0.018 16);
-  --foreground:          oklch(0.87 0.012 20);
-  --card:                oklch(0.17 0.016 16);
-  --card-foreground:     oklch(0.87 0.012 20);
-  --popover:             oklch(0.18 0.016 16);
-  --popover-foreground:  oklch(0.87 0.012 20);
-  --primary:             oklch(0.68 0.24 22);
-  --primary-foreground:  oklch(0.97 0 0);
-  --secondary:           oklch(0.20 0.014 16);
-  --secondary-foreground:oklch(0.87 0.012 20);
-  --muted:               oklch(0.20 0.012 16);
-  --muted-foreground:    oklch(0.62 0.028 18);
-  --accent:              oklch(0.23 0.014 16);
-  --accent-foreground:   oklch(0.87 0.012 20);
-  --destructive:         oklch(0.60 0.22 22);
+  --background: oklch(0.13 0.018 16);
+  --foreground: oklch(0.87 0.012 20);
+  --card: oklch(0.17 0.016 16);
+  --card-foreground: oklch(0.87 0.012 20);
+  --popover: oklch(0.18 0.016 16);
+  --popover-foreground: oklch(0.87 0.012 20);
+  --primary: oklch(0.68 0.24 22);
+  --primary-foreground: oklch(0.97 0 0);
+  --secondary: oklch(0.2 0.014 16);
+  --secondary-foreground: oklch(0.87 0.012 20);
+  --muted: oklch(0.2 0.012 16);
+  --muted-foreground: oklch(0.62 0.028 18);
+  --accent: oklch(0.23 0.014 16);
+  --accent-foreground: oklch(0.87 0.012 20);
+  --destructive: oklch(0.6 0.22 22);
   --destructive-foreground: oklch(0.97 0 0);
-  --border:              oklch(0.24 0.016 16);
-  --input:               oklch(0.24 0.016 16);
-  --ring:                oklch(0.62 0.22 22);
-  --sidebar:             oklch(0.16 0.016 16);
-  --sidebar-foreground:  oklch(0.87 0.012 20);
-  --sidebar-primary:     oklch(0.62 0.22 22);
+  --border: oklch(0.24 0.016 16);
+  --input: oklch(0.24 0.016 16);
+  --ring: oklch(0.62 0.22 22);
+  --sidebar: oklch(0.16 0.016 16);
+  --sidebar-foreground: oklch(0.87 0.012 20);
+  --sidebar-primary: oklch(0.62 0.22 22);
   --sidebar-primary-foreground: oklch(0.97 0 0);
-  --sidebar-accent:      oklch(0.23 0.014 16);
+  --sidebar-accent: oklch(0.23 0.014 16);
   --sidebar-accent-foreground: oklch(0.87 0.012 20);
-  --sidebar-border:      oklch(0.24 0.016 16);
-  --sidebar-ring:        oklch(0.62 0.22 22);
+  --sidebar-border: oklch(0.24 0.016 16);
+  --sidebar-ring: oklch(0.62 0.22 22);
 
-  --typer-correct:       oklch(0.93 0.008 20);
-  --typer-wrong:         oklch(0.65 0.26 22);
-  --typer-wrong-dim:     oklch(0.50 0.18 22);
-  --typer-untyped:       oklch(0.58 0.020 18);
-  --typer-extra:         oklch(0.57 0.24 24);
-  --typer-caret:         oklch(0.73 0.24 22);
-  --typer-word-border:   oklch(0.56 0.042 18);
+  --typer-correct: oklch(0.93 0.008 20);
+  --typer-wrong: oklch(0.65 0.26 22);
+  --typer-wrong-dim: oklch(0.5 0.18 22);
+  --typer-untyped: oklch(0.62 0.02 18);
+  --typer-extra: oklch(0.57 0.24 24);
+  --typer-caret: oklch(0.73 0.24 22);
+  --typer-word-border: oklch(0.56 0.042 18);
 }
 
 @layer base {
@@ -155,19 +160,106 @@
 
 /* ── Caret animation ── */
 @keyframes caretBlink {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 
 .typer-caret {
-  display: inline-block;
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 2px;
   height: 1.25em;
   background-color: var(--typer-caret);
-  margin-right: -2px;
-  position: relative;
-  top: 0.1em;
-  vertical-align: middle;
-  animation: caretBlink 1.06s step-end infinite;
   border-radius: 1px;
+  animation: caretBlink 1.06s step-end infinite;
+  transition: transform 0.12s ease-out;
+  will-change: transform;
+}
+
+/* Block caret sits on the current character itself */
+.typer-caret-block {
+  background-color: var(--typer-caret);
+  color: var(--background);
+  border-radius: 3px;
+  animation: caretBlink 1.06s step-end infinite;
+}
+
+/* ── Wrong-key shake ── */
+@keyframes typerShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-0.06em);
+  }
+  75% {
+    transform: translateX(0.06em);
+  }
+}
+
+.typer-shake {
+  animation: typerShake 0.12s ease-in-out;
+}
+
+/* ── Word-boundary marker ── */
+.typer-word-marker {
+  position: absolute;
+  left: 100%;
+  top: 0.45em;
+  font-size: 0.4em;
+  line-height: 1;
+  color: var(--typer-caret);
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+/* ── Splash screen ── */
+@keyframes splashIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes splashOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.typer-splash-in {
+  animation: splashIn 0.5s ease-out both;
+}
+
+.typer-splash-out {
+  animation: splashOut 0.35s ease-in both;
+}
+
+/* ── Reduced motion (a11y) ── */
+@media (prefers-reduced-motion: reduce) {
+  .typer-caret {
+    animation: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
