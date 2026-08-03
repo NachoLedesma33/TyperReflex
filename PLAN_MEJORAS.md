@@ -1,6 +1,6 @@
 # TyperReflex – Plan de Mejoras
 
-> Estado: Fases 0–4 completas y **sección 1 completa** (componentes/funcionalidad). Pendiente: punto 17 (backend/multiplayer, decisión separada), secciones 2–10 (estilos, perf, tests, fuentes, a11y restante, UX, tooling, analytics opcional).
+> Estado: Fases 0–4 completas, **sección 1 completa** (componentes/funcionalidad) y **sección 2 completa** (estilos/UI/UX). Pendiente: punto 17 (backend/multiplayer, decisión separada), secciones 3–10 (perf restante, tests, fuentes restantes, a11y restante, UX, tooling, analytics opcional).
 > Referencias de código: `src/components/TypingTest.tsx`, `src/lib/words.ts`, `src/index.css`, `src/App.tsx`.
 
 ---
@@ -57,19 +57,19 @@
 
 ## 2. Estilos / UI / UX
 
-- [ ] **Fuentes self-hosted**: usar variable font (ej. `JetBrains Mono`, `IBM Plex Mono`, `Fira Code`) descargada localmente en vez de depender del sistema → más consistente en todas las plataformas. Agregar `@font-face` + `font-display: swap`.
-- [ ] **Fallback de fuente**: definir stack `font-mono` explícito.
-- [ ] **Tabular numbers** para WPM/timer (ya parcial con `tabular-nums`).
-- [ ] **Paleta de temas adicionales** (dark/light y themes como "crimson", "matrix", "gruvbox") seleccionables desde un menú de temas.
-- [ ] **Estilo hover/focus visible** consistente (a11y) en ToolBtn.
-- [ ] **Transición de tema** suave (evitar flash) con `color-scheme`.
-- [ ] **Prevenir FOUC** del tema oscuro (script inline en `index.html` o `theme-provider` aplicando antes del render).
-- [ ] **Scroll de la zona de palabras más suave**: reducir motion blur (el `transform: translateY` con transición puede producir subpixel blur — forzar redondeo de `scrollOffset` a enteros, o usar `will-change: transform`).
-- [ ] **Optimizar line-height/font-size con tokens** responsive (ya con `clamp()`), considerar medir en `em` para coherencia.
-- [ ] **Espaciado y jerarquía de la pantalla de resultados** mejorada (stats primarias vs secundarias).
-- [ ] **Dark mode para la página completa** incluyendo scrollbars (`::-webkit-scrollbar`).
-- [ ] **Iconografía** coherente en toolbar (lucide-react ya disponible).
-- [ ] **Layout** más cercano a monkeytype: contenido centrado, headers/inputs alineados a la zona de tipeo, no full-width.
+- [x] **Fuentes self-hosted**: variable font `JetBrains Mono` (woff2 40KB, pesos 100–800) descargada en `public/fonts` en vez de depender del sistema/CDN → consistente en todas las plataformas. `@font-face` + `font-display: swap` + `preload`.
+- [x] **Fallback de fuente**: stack `--font-mono` explícito en `@theme` (`ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace`).
+- [x] **Tabular numbers** para WPM/timer (TimerRing, contador de palabras, resultados, footer).
+- [x] **Paleta de temas adicionales**: agregadas `matrix` (verde) y `gruvbox` (naranja) al sistema de paletas existente, seleccionables desde Settings.
+- [x] **Estilo hover/focus visible** consistente (a11y) en ToolBtn: `aria-pressed`, `hover:bg-accent/40`, `focus-visible` outline en todos los botones.
+- [x] **Transición de tema** suave (evitar flash) con `color-scheme` (`light`/`dark` en `:root`/`.dark`).
+- [x] **Prevenir FOUC** del tema oscuro: script inline en `index.html` aplica la clase `dark`/`light` antes del render.
+- [x] **Scroll de la zona de palabras más suave**: `will-change: transform` + `backface-visibility: hidden` en el contenedor scrolleable; `scrollOffset` ya se redondea a enteros.
+- [x] **Optimizar line-height/font-size con tokens**: `--typer-line-height: calc(var(--typer-font-size) * 1.85)` unificado en CSS y settings.
+- [x] **Espaciado y jerarquía de la pantalla de resultados**: stats secundarias en grid de cards (raw, chars, time, mode, consistency, percentile).
+- [x] **Dark mode para la página completa** incluyendo scrollbars (`::-webkit-scrollbar` + `scrollbar-width`/`scrollbar-color`).
+- [x] **Iconografía** coherente en toolbar (lucide-react): Quote/Hash/CaseUpper/Ruler/Binary/Percent + Timer/Rows3/Zap.
+- [x] **Layout** más cercano a monkeytype: header/footer alineados al ancho de la zona de tipeo (`max-w-4xl mx-auto`).
 
 ---
 
@@ -100,7 +100,7 @@
 
 - [ ] **`content-visibility: auto`** en filas fuera de pantalla.
 - [x] **PWA**: manifest + service worker para instalación y offline (vite-plugin-pwa).
-- [ ] **Precarga de fuente** (`<link rel="preload">`).
+- [x] **Precarga de fuente** (`<link rel="preload">` en `index.html`).
 
 ---
 
@@ -135,11 +135,11 @@
 
 ## 5. Fuentes / Tipografía
 
-- [ ] Elegir variable font mono (JetBrains Mono / IBM Plex Mono / Geist Mono) y self-hostear en `public/fonts`.
-- [ ] `@font-face` con `font-display: swap` y subsets.
-- [ ] Usar la fuente para todo el mono (palabras, timer, resultados).
-- [ ] Config de tamaño/gap de fuente en settings (slider).
-- [ ] `font-feature-settings` / ligaduras off para claridad en tipeo.
+- [x] Elegir variable font mono (JetBrains Mono) y self-hostear en `public/fonts` (woff2 40KB, pesos 100–800).
+- [x] `@font-face` con `font-display: swap` y subsets (latin variable).
+- [x] Usar la fuente para todo el mono (palabras, timer, resultados) vía `--font-mono` base.
+- [x] Config de tamaño/gap de fuente en settings (slider).
+- [x] `font-variant-ligatures: none` para claridad en tipeo.
 
 ---
 
