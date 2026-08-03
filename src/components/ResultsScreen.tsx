@@ -288,7 +288,7 @@ export function ResultsScreen({
         </div>
       )}
 
-      <div className="flex items-start gap-10 flex-wrap">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
         {[
           { label: "raw", value: String(results.rawWpm) },
           {
@@ -303,11 +303,14 @@ export function ResultsScreen({
             value: percentile !== null ? `${percentile}%` : "--",
           },
         ].map(({ label, value }) => (
-          <div key={label}>
-            <p className="font-mono text-xs text-typer-untyped mb-0.5">
+          <div
+            key={label}
+            className="flex flex-col gap-1 rounded-lg border border-border/60 bg-card/40 px-4 py-3"
+          >
+            <p className="font-mono text-[11px] uppercase tracking-wider text-typer-untyped opacity-80">
               {label}
             </p>
-            <p className="font-mono text-xl font-semibold text-typer-untyped tabular-nums">
+            <p className="font-mono text-lg font-semibold text-typer-untyped tabular-nums truncate">
               {value}
             </p>
           </div>
