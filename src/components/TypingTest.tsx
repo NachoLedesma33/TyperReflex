@@ -12,6 +12,17 @@ import { generateWords } from "@/lib/words";
 import { cn } from "@/lib/utils";
 import { useSettings } from "@/lib/settings";
 import { playErrorSound, playKeySound } from "@/lib/sound";
+import {
+  Binary,
+  CaseUpper,
+  Hash,
+  Percent,
+  Quote,
+  Rows3,
+  Ruler,
+  Timer,
+  Zap,
+} from "lucide-react";
 import type { ChartPoint, Results } from "@/components/ResultsScreen";
 import { getPersonalBest, saveResult, type HistoryEntry } from "@/lib/history";
 import { recordKeyHeatmap, recordStats } from "@/lib/stats";
@@ -292,23 +303,27 @@ function ToolBtn({
   active,
   onClick,
   title,
+  icon: Icon,
   children,
 }: {
   active?: boolean;
   onClick: () => void;
   title?: string;
+  icon?: React.ElementType;
   children: React.ReactNode;
 }) {
   return (
     <button
       onClick={onClick}
       title={title}
+      aria-pressed={active}
       className={cn(
-        "px-3.5 py-1.5 rounded font-mono text-xl transition-colors whitespace-nowrap",
-        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
+        "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md font-mono text-xl transition-colors whitespace-nowrap",
+        "hover:bg-accent/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
         active ? "text-primary" : "text-typer-untyped hover:text-typer-correct"
       )}
     >
+      {Icon && <Icon className="size-4.5" aria-hidden="true" />}
       {children}
     </button>
   );
@@ -840,27 +855,31 @@ export function TypingTest() {
           <ToolBtn
             active={punctuation}
             title="punctuation (p)"
+            icon={Quote}
             onClick={() => setPunctuation((p) => !p)}
           >
-            @ punctuation
+            punctuation
           </ToolBtn>
           <ToolBtn
             active={numbers}
             title="numbers (n)"
+            icon={Hash}
             onClick={() => setNumbers((n) => !n)}
           >
-            # numbers
+            numbers
           </ToolBtn>
           <ToolBtn
             active={capitals}
             title="capitals (c)"
+            icon={CaseUpper}
             onClick={() => setCapitals((c) => !c)}
           >
-            Aa capitals
+            capitals
           </ToolBtn>
           <ToolBtn
             active={longWords}
             title="long words (l)"
+            icon={Ruler}
             onClick={toggleLong}
           >
             long
@@ -868,6 +887,7 @@ export function TypingTest() {
           <ToolBtn
             active={onlyNumbers}
             title="only numbers"
+            icon={Binary}
             onClick={toggleNumberOnly}
           >
             number
@@ -875,6 +895,7 @@ export function TypingTest() {
           <ToolBtn
             active={onlySymbols}
             title="only symbols"
+            icon={Percent}
             onClick={toggleSymbolOnly}
           >
             symbol
@@ -885,6 +906,7 @@ export function TypingTest() {
           <ToolBtn
             active={mode === "time"}
             title="time mode (m)"
+            icon={Timer}
             onClick={() => setMode("time")}
           >
             time
@@ -892,6 +914,7 @@ export function TypingTest() {
           <ToolBtn
             active={mode === "words"}
             title="words mode (m)"
+            icon={Rows3}
             onClick={() => setMode("words")}
           >
             words
@@ -899,6 +922,7 @@ export function TypingTest() {
           <ToolBtn
             active={mode === "zen"}
             title="zen mode (m)"
+            icon={Zap}
             onClick={() => setMode("zen")}
           >
             zen
@@ -997,6 +1021,8 @@ export function TypingTest() {
               transform: `translateY(-${scrollOffset}px)`,
               transition:
                 scrollOffset > 0 ? "transform 0.15s ease-out" : "none",
+              willChange: "transform",
+              backfaceVisibility: "hidden",
             }}
           >
             {words.slice(0, currentWordIdx + 80).map((word, idx) => {
