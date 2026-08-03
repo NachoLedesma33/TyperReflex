@@ -60,7 +60,7 @@
 - [x] **Fuentes self-hosted**: variable font `JetBrains Mono` (woff2 40KB, pesos 100–800) descargada en `public/fonts` en vez de depender del sistema/CDN → consistente en todas las plataformas. `@font-face` + `font-display: swap` + `preload`.
 - [x] **Fallback de fuente**: stack `--font-mono` explícito en `@theme` (`ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace`).
 - [x] **Tabular numbers** para WPM/timer (TimerRing, contador de palabras, resultados, footer).
-- [x] **Paleta de temas adicionales**: agregadas `matrix` (verde) y `gruvbox` (naranja) al sistema de paletas existente, seleccionables desde Settings. Además nuevo **theme de background "Lavender"** (`#c1bbd1`, clase `theme-lavender`) con vars light/dark propias que mantienen contraste de lectura; las paletas de acento siguen aplicando sobre él.
+- [x] **Paleta de temas adicionales**: agregadas `matrix` (verde) y `gruvbox` (naranja) al sistema de paletas existente, seleccionables desde Settings. Además **themes de background** con vars light/dark propias que mantienen contraste de lectura y sobre los que siguen aplicando las paletas de acento: **Lavender** (`#c1bbd1`), **Sage** (verde-gris), **Ocean** (azul suave) y **Sand** (beige cálido), seleccionables en Settings (setting `themeId`, clases `theme-*`).
 - [x] **Estilo hover/focus visible** consistente (a11y) en ToolBtn: `aria-pressed`, `hover:bg-accent/40`, `focus-visible` outline en todos los botones.
 - [x] **Transición de tema** suave (evitar flash) con `color-scheme` (`light`/`dark` en `:root`/`.dark`).
 - [x] **Prevenir FOUC** del tema oscuro: script inline en `index.html` aplica la clase `dark`/`light` antes del render.
