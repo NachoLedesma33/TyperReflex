@@ -7,7 +7,24 @@
     <meta name="theme-color" content="#f2f2f2" />
     <meta name="description" content="Minimal typing speed test" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="preload"
+      href="/fonts/JetBrainsMono-Variable.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <title>TyperReflex</title>
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("typerreflex-theme");
+          var resolved =
+            stored === "dark" || stored === "light" ? stored : "light";
+          document.documentElement.classList.add(resolved);
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

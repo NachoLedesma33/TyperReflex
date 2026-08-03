@@ -1,8 +1,22 @@
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
+
+@theme {
+  --font-mono:
+    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas,
+    "Liberation Mono", monospace;
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url("/fonts/JetBrainsMono-Variable.woff2") format("woff2");
+}
 
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
@@ -50,6 +64,7 @@
 /* ── TyperReflex – light gray minimalist palette ── */
 :root {
   --radius: 0.5rem;
+  color-scheme: light;
 
   /* Core surface – neutral light gray */
   --background: oklch(0.95 0 0); /* #f2f2f2 – clean light gray */
@@ -106,12 +121,13 @@
 
   /* ── Typer layout tokens ── */
   --typer-font-size: clamp(1.5rem, 0.75rem + 2.2vw, 2.125rem);
-  --typer-line-height: clamp(2.75rem, 1.5rem + 3.8vw, 3.875rem);
+  --typer-line-height: calc(var(--typer-font-size) * 1.85);
   --typer-word-gap-x: 0.7rem;
 }
 
 /* Dark mode – original crimson/dark palette */
 .dark {
+  color-scheme: dark;
   --background: oklch(0.13 0.018 16);
   --foreground: oklch(0.87 0.012 20);
   --card: oklch(0.17 0.016 16);
@@ -155,6 +171,29 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-variant-ligatures: none;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 5px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground);
+    background-clip: padding-box;
+    border: 2px solid transparent;
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
   }
 }
 

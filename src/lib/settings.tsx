@@ -107,7 +107,6 @@ export const FONT_STACKS: Record<Exclude<FontId, "default">, string> = {
 };
 
 export const FONT_OPTIONS: { id: FontId; name: string }[] = [
-  { id: "default", name: "System mono" },
   { id: "jetbrains", name: "JetBrains Mono" },
   { id: "ibmplex", name: "IBM Plex Mono" },
 ];
@@ -126,7 +125,7 @@ const STORAGE_KEY = "typerreflex-settings";
 const PRESETS_KEY = "typerreflex-presets";
 
 export const DEFAULT_SETTINGS: Settings = {
-  fontFamily: "default",
+  fontFamily: "jetbrains",
   fontSize: 2.125,
   wordGap: 0.7,
   soundEnabled: false,
@@ -141,6 +140,9 @@ function loadSettings(): Settings {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return DEFAULT_SETTINGS;
     const parsed = JSON.parse(raw) as Partial<Settings>;
+    if (parsed.fontFamily === "default") {
+      parsed.fontFamily = "jetbrains";
+    }
     return { ...DEFAULT_SETTINGS, ...parsed };
   } catch {
     return DEFAULT_SETTINGS;
