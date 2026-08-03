@@ -97,6 +97,18 @@ export const PALETTES: Palette[] = [
   },
 ];
 
+export type ThemeId = "classic" | "lavender";
+
+export interface Theme {
+  id: ThemeId;
+  name: string;
+}
+
+export const THEMES: Theme[] = [
+  { id: "classic", name: "Classic gray" },
+  { id: "lavender", name: "Lavender" },
+];
+
 export type FontId = "default" | "jetbrains" | "ibmplex";
 
 export const FONT_STACKS: Record<Exclude<FontId, "default">, string> = {
@@ -117,6 +129,7 @@ export interface Settings {
   wordGap: number;
   soundEnabled: boolean;
   palette: PaletteId;
+  themeId: ThemeId;
   caretStyle: "bar" | "block";
   shakeEnabled: boolean;
 }
@@ -130,6 +143,7 @@ export const DEFAULT_SETTINGS: Settings = {
   wordGap: 0.7,
   soundEnabled: false,
   palette: "crimson",
+  themeId: "classic",
   caretStyle: "bar",
   shakeEnabled: false,
 };
@@ -161,6 +175,8 @@ const SettingsContext = React.createContext<SettingsContextValue | undefined>(
 
 function applyCssVars(settings: Settings) {
   const root = document.documentElement;
+
+  root.classList.toggle("theme-lavender", settings.themeId === "lavender");
 
   if (settings.fontFamily === "default") {
     root.style.removeProperty("--font-mono");

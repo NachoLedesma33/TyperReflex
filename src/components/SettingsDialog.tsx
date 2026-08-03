@@ -27,6 +27,7 @@ import {
   getPresets,
   PALETTES,
   savePreset,
+  THEMES,
   useSettings,
   type SettingsPreset,
 } from "@/lib/settings";
@@ -155,6 +156,29 @@ export function SettingsDialog() {
               <SelectContent>
                 <SelectItem value="bar">bar</SelectItem>
                 <SelectItem value="block">block</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="settings-theme" className="font-mono">
+              Theme
+            </Label>
+            <Select
+              value={settings.themeId}
+              onValueChange={(v) =>
+                updateSettings({ themeId: v as typeof settings.themeId })
+              }
+            >
+              <SelectTrigger id="settings-theme">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {THEMES.map((t) => (
+                  <SelectItem key={t.id} value={t.id}>
+                    {t.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
