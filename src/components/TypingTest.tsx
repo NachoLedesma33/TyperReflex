@@ -329,6 +329,156 @@ function ToolBtn({
   );
 }
 
+// ─── Toolbar (static subtree, isolated so keystrokes don't re-render it) ─────
+
+type OptionsToolbarProps = {
+  mode: Mode;
+  timeOption: number;
+  wordOption: number;
+  punctuation: boolean;
+  numbers: boolean;
+  capitals: boolean;
+  longWords: boolean;
+  onlyNumbers: boolean;
+  onlySymbols: boolean;
+  setMode: React.Dispatch<React.SetStateAction<Mode>>;
+  setTimeOption: React.Dispatch<React.SetStateAction<number>>;
+  setWordOption: React.Dispatch<React.SetStateAction<number>>;
+  setPunctuation: React.Dispatch<React.SetStateAction<boolean>>;
+  setNumbers: React.Dispatch<React.SetStateAction<boolean>>;
+  setCapitals: React.Dispatch<React.SetStateAction<boolean>>;
+  onToggleLong: () => void;
+  onToggleNumberOnly: () => void;
+  onToggleSymbolOnly: () => void;
+};
+
+const OptionsToolbar = memo(function OptionsToolbar({
+  mode,
+  timeOption,
+  wordOption,
+  punctuation,
+  numbers,
+  capitals,
+  longWords,
+  onlyNumbers,
+  onlySymbols,
+  setMode,
+  setTimeOption,
+  setWordOption,
+  setPunctuation,
+  setNumbers,
+  setCapitals,
+  onToggleLong,
+  onToggleNumberOnly,
+  onToggleSymbolOnly,
+}: OptionsToolbarProps) {
+  return (
+    <div className="flex flex-col items-center gap-1.5">
+      <div className="flex flex-wrap items-center justify-center gap-0.5">
+        <ToolBtn
+          active={punctuation}
+          title="punctuation (p)"
+          icon={Quote}
+          onClick={() => setPunctuation((p) => !p)}
+        >
+          punctuation
+        </ToolBtn>
+        <ToolBtn
+          active={numbers}
+          title="numbers (n)"
+          icon={Hash}
+          onClick={() => setNumbers((n) => !n)}
+        >
+          numbers
+        </ToolBtn>
+        <ToolBtn
+          active={capitals}
+          title="capitals (c)"
+          icon={CaseUpper}
+          onClick={() => setCapitals((c) => !c)}
+        >
+          capitals
+        </ToolBtn>
+        <ToolBtn
+          active={longWords}
+          title="long words (l)"
+          icon={Ruler}
+          onClick={onToggleLong}
+        >
+          long
+        </ToolBtn>
+        <ToolBtn
+          active={onlyNumbers}
+          title="only numbers"
+          icon={Binary}
+          onClick={onToggleNumberOnly}
+        >
+          number
+        </ToolBtn>
+        <ToolBtn
+          active={onlySymbols}
+          title="only symbols"
+          icon={Percent}
+          onClick={onToggleSymbolOnly}
+        >
+          symbol
+        </ToolBtn>
+      </div>
+
+      <div className="flex flex-wrap items-center justify-center gap-0.5">
+        <ToolBtn
+          active={mode === "time"}
+          title="time mode (m)"
+          icon={Timer}
+          onClick={() => setMode("time")}
+        >
+          time
+        </ToolBtn>
+        <ToolBtn
+          active={mode === "words"}
+          title="words mode (m)"
+          icon={Rows3}
+          onClick={() => setMode("words")}
+        >
+          words
+        </ToolBtn>
+        <ToolBtn
+          active={mode === "zen"}
+          title="zen mode (m)"
+          icon={Zap}
+          onClick={() => setMode("zen")}
+        >
+          zen
+        </ToolBtn>
+
+        <span className="w-px h-4 bg-border/50 mx-2 shrink-0" />
+
+        {mode === "time"
+          ? TIME_OPTIONS.map((t, i) => (
+              <ToolBtn
+                key={t}
+                active={timeOption === t}
+                title={`${t} seconds (${i + 1})`}
+                onClick={() => setTimeOption(t)}
+              >
+                {t}
+              </ToolBtn>
+            ))
+          : WORD_OPTIONS.map((w, i) => (
+              <ToolBtn
+                key={w}
+                active={wordOption === w}
+                title={`${w} words (${i + 1})`}
+                onClick={() => setWordOption(w)}
+              >
+                {w}
+              </ToolBtn>
+            ))}
+      </div>
+    </div>
+  );
+});
+
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export function TypingTest() {
@@ -542,9 +692,14 @@ export function TypingTest() {
     keyHeatmapRef.current = {};
     setErrorPairs({});
     errorPairsRef.current = {};
-
-    setTimeout(() => inputRef.current?.focus(), 50);
   }, [timeOption]);
+
+  // Focus the hidden input whenever the test is back to idle (avoids nested setTimeout)
+  useEffect(() => {
+    if (gameStatus === "idle") {
+      inputRef.current?.focus();
+    }
+  }, [gameStatus]);
 
   // Re-initialize when any option changes
   /* eslint-disable react-hooks/exhaustive-deps */
@@ -850,109 +1005,26 @@ export function TypingTest() {
   return (
     <div className="flex flex-col gap-6 w-full max-w-4xl mx-auto px-4">
       {/* ── Toolbar ── */}
-      <div className="flex flex-col items-center gap-1.5">
-        <div className="flex flex-wrap items-center justify-center gap-0.5">
-          <ToolBtn
-            active={punctuation}
-            title="punctuation (p)"
-            icon={Quote}
-            onClick={() => setPunctuation((p) => !p)}
-          >
-            punctuation
-          </ToolBtn>
-          <ToolBtn
-            active={numbers}
-            title="numbers (n)"
-            icon={Hash}
-            onClick={() => setNumbers((n) => !n)}
-          >
-            numbers
-          </ToolBtn>
-          <ToolBtn
-            active={capitals}
-            title="capitals (c)"
-            icon={CaseUpper}
-            onClick={() => setCapitals((c) => !c)}
-          >
-            capitals
-          </ToolBtn>
-          <ToolBtn
-            active={longWords}
-            title="long words (l)"
-            icon={Ruler}
-            onClick={toggleLong}
-          >
-            long
-          </ToolBtn>
-          <ToolBtn
-            active={onlyNumbers}
-            title="only numbers"
-            icon={Binary}
-            onClick={toggleNumberOnly}
-          >
-            number
-          </ToolBtn>
-          <ToolBtn
-            active={onlySymbols}
-            title="only symbols"
-            icon={Percent}
-            onClick={toggleSymbolOnly}
-          >
-            symbol
-          </ToolBtn>
-        </div>
-
-        <div className="flex flex-wrap items-center justify-center gap-0.5">
-          <ToolBtn
-            active={mode === "time"}
-            title="time mode (m)"
-            icon={Timer}
-            onClick={() => setMode("time")}
-          >
-            time
-          </ToolBtn>
-          <ToolBtn
-            active={mode === "words"}
-            title="words mode (m)"
-            icon={Rows3}
-            onClick={() => setMode("words")}
-          >
-            words
-          </ToolBtn>
-          <ToolBtn
-            active={mode === "zen"}
-            title="zen mode (m)"
-            icon={Zap}
-            onClick={() => setMode("zen")}
-          >
-            zen
-          </ToolBtn>
-
-          <span className="w-px h-4 bg-border/50 mx-2 shrink-0" />
-
-          {mode === "time"
-            ? TIME_OPTIONS.map((t, i) => (
-                <ToolBtn
-                  key={t}
-                  active={timeOption === t}
-                  title={`${t} seconds (${i + 1})`}
-                  onClick={() => setTimeOption(t)}
-                >
-                  {t}
-                </ToolBtn>
-              ))
-            : WORD_OPTIONS.map((w, i) => (
-                <ToolBtn
-                  key={w}
-                  active={wordOption === w}
-                  title={`${w} words (${i + 1})`}
-                  onClick={() => setWordOption(w)}
-                >
-                  {w}
-                </ToolBtn>
-              ))}
-        </div>
-      </div>
+      <OptionsToolbar
+        mode={mode}
+        timeOption={timeOption}
+        wordOption={wordOption}
+        punctuation={punctuation}
+        numbers={numbers}
+        capitals={capitals}
+        longWords={longWords}
+        onlyNumbers={onlyNumbers}
+        onlySymbols={onlySymbols}
+        setMode={setMode}
+        setTimeOption={setTimeOption}
+        setWordOption={setWordOption}
+        setPunctuation={setPunctuation}
+        setNumbers={setNumbers}
+        setCapitals={setCapitals}
+        onToggleLong={toggleLong}
+        onToggleNumberOnly={toggleNumberOnly}
+        onToggleSymbolOnly={toggleSymbolOnly}
+      />
 
       {/* ── Counter / timer ── */}
       <div className="h-10 flex items-center">
@@ -1015,7 +1087,7 @@ export function TypingTest() {
           style={{ height: "calc(var(--typer-line-height) * 3)" }}
         >
           <div
-            className="flex flex-wrap"
+            className="typer-words flex flex-wrap"
             style={{
               columnGap: "var(--typer-word-gap-x)",
               transform: `translateY(-${scrollOffset}px)`,

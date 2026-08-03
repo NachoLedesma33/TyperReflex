@@ -569,6 +569,12 @@
   will-change: transform;
 }
 
+/* Skip rendering of word rows that are translated off-screen */
+.typer-words {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 132px;
+}
+
 /* Block caret sits on the current character itself */
 .typer-caret-block {
   background-color: var(--typer-caret);

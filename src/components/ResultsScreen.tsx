@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import confetti from "canvas-confetti";
 import {
   CartesianGrid,
@@ -137,7 +137,7 @@ function resultSummary(
   ].join("\n");
 }
 
-export function ResultsScreen({
+export const ResultsScreen = memo(function ResultsScreen({
   results,
   chartData,
   mode,
@@ -383,4 +383,4 @@ export function ResultsScreen({
       </div>
     </div>
   );
-}
+});
