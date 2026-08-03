@@ -79,26 +79,26 @@
 
 - [x] **Evitar re-renderizar los 300 words** en cada keystroke: memoizar `WordSpan` con `React.memo` y pasar props estables; actualmente cada tecla re-renderiza la lista completa de `words.map`.
 - [x] **Virtualizar la lista de palabras** (solo renderizar las visibles + buffer) — con las 3 filas visibles bastaría renderizar ~15-20 words.
-- [ ] **Separar el estado "caliente"** (input actual) del estado "frío" (palabras) para reducir renderizaciones.
-- [ ] **Memoizar `ResultsScreen`** y componentes estáticos.
-- [ ] **`useMemo`/`useCallback`** para funciones helpers costosas.
+- [x] **Separar el estado "caliente"** (input actual) del estado "frío" (palabras) para reducir renderizaciones — toolbar aislada en `OptionsToolbar` (`React.memo`) con setters estables; los keystrokes ya no re-renderizan los ~15 botones del toolbar.
+- [x] **Memoizar `ResultsScreen`** y componentes estáticos — `ResultsScreen` envuelto en `React.memo`.
+- [x] **`useMemo`/`useCallback`** para funciones helpers costosas — los setters del toolbar son estables (setState + toggles useCallback); los cálculos de resultados ya usan `useMemo`.
 
 ### 3.2 Timer / intervalos
 
 - [x] **Timers basados en timestamps** (`performance.now()`) en vez de `setInterval` de 1s — el intervalo actual puede desincronizarse y causar renders innecesarios.
 - [x] **Reducir renders del timer**: actualizar el contador cada 100ms-250ms con `requestAnimationFrame` o solo cuando cambia el segundo.
-- [ ] **Evitar `setTimeout` anidado** en `resetTest` para focus (usar `useEffect`).
+- [x] **Evitar `setTimeout` anidado** en `resetTest` para focus — reemplazado por `useEffect` sobre `gameStatus === "idle"`.
 
 ### 3.3 Bundles / assets
 
-- [ ] **Code-splitting**: cargar solo lo necesario; el bundle JS actual ~235KB gzip ~75KB (ok), pero recharts/ui no usados deberían quitarse de deps o importarse perezosamente.
+- [x] **Code-splitting**: los dialogs del header (Settings/History/Stats) y `ModeToggle` son lazy-loaded con `Suspense` — son los únicos consumidores de `radix-ui`, así que sale del chunk principal (392KB→259KB, gzip 124KB→83KB). recharts ya estaba lazy en `ResultsScreen`.
 - [x] **Eliminar dependencias sin uso**: borradas 54 de 62 componentes `ui/` (quedan button, dialog, input, label, select, slider, switch, dropdown-menu). Quitadas 12 deps de `package.json` (cmdk, vaul, embla-carousel-react, react-day-picker, input-otp, react-hook-form, @hookform/resolvers, react-resizable-panels, sonner, next-themes, date-fns, zod). `canvas-confetti` movido de devDependencies a dependencies (se usa en runtime). -16 paquetes en `npm install`.
 - [x] **Analizar bundle**: `vite build` con `rollup-plugin-visualizer` (`npm run build:analyze`, reporte en `dist/bundle-report.html`). Resultado (gzip): recharts 185KB (ya lazy en ResultsScreen ✓), react-dom 95KB, radix-ui 44KB (en chunk principal), código propio 36KB, total 540KB. No queda limpieza obvia en deps; optimización real = code-splitting de radix-ui (3.1/3.4) o migrar de recharts a SVG propio.
 - [x] **Lazy-load** de `Words`/UI de resultados.
 
 ### 3.4 Otros
 
-- [ ] **`content-visibility: auto`** en filas fuera de pantalla.
+- [x] **`content-visibility: auto`** en filas fuera de pantalla — clase `.typer-words` en el contenedor de palabras (rows traducidas fuera de pantalla se saltan el render/layout) con `contain-intrinsic-size`.
 - [x] **PWA**: manifest + service worker para instalación y offline (vite-plugin-pwa).
 - [x] **Precarga de fuente** (`<link rel="preload">` en `index.html`).
 
