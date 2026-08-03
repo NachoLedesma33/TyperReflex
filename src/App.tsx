@@ -1,12 +1,27 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 
 import { TypingTest } from "@/components/TypingTest";
-import { ModeToggle } from "@/components/mode-toggle";
-import { SettingsDialog } from "@/components/SettingsDialog";
-import { HistoryDialog } from "@/components/HistoryDialog";
-import { StatsDialog } from "@/components/StatsDialog";
 import { getStats } from "@/lib/stats";
 import { cn } from "@/lib/utils";
+
+// Header widgets are lazy-loaded: they are the only consumers of radix-ui, so
+// this keeps radix out of the main chunk until a dialog/menu is first opened.
+const ModeToggle = lazy(() =>
+  import("@/components/mode-toggle").then((m) => ({ default: m.ModeToggle }))
+);
+const SettingsDialog = lazy(() =>
+  import("@/components/SettingsDialog").then((m) => ({
+    default: m.SettingsDialog,
+  }))
+);
+const HistoryDialog = lazy(() =>
+  import("@/components/HistoryDialog").then((m) => ({
+    default: m.HistoryDialog,
+  }))
+);
+const StatsDialog = lazy(() =>
+  import("@/components/StatsDialog").then((m) => ({ default: m.StatsDialog }))
+);
 
 function Splash({ visible }: { visible: boolean }) {
   return (
@@ -89,10 +104,23 @@ function App() {
           TyperReflex
         </span>
         <div className="flex items-center gap-2">
-          <HistoryDialog />
-          <StatsDialog />
-          <SettingsDialog />
-          <ModeToggle />
+          <Suspense
+            fallback={
+              <div className="flex items-center gap-2">
+                {Array.from({ length: 4 }, (_, i) => (
+                  <span
+                    key={i}
+                    className="size-9 rounded-md border border-border/60"
+                  />
+                ))}
+              </div>
+            }
+          >
+            <HistoryDialog />
+            <StatsDialog />
+            <SettingsDialog />
+            <ModeToggle />
+          </Suspense>
         </div>
       </header>
 
