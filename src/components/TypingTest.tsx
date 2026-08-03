@@ -850,8 +850,8 @@ export function TypingTest() {
   return (
     <div className="flex flex-col gap-6 w-full max-w-4xl mx-auto px-4">
       {/* ── Toolbar ── */}
-      <div className="flex items-center overflow-x-auto pb-1 -mb-1 [scrollbar-width:thin]">
-        <div className="flex items-center flex-wrap gap-0.5 shrink-0">
+      <div className="flex flex-col items-center gap-1.5">
+        <div className="flex flex-wrap items-center justify-center gap-0.5">
           <ToolBtn
             active={punctuation}
             title="punctuation (p)"
@@ -900,9 +900,9 @@ export function TypingTest() {
           >
             symbol
           </ToolBtn>
+        </div>
 
-          <span className="w-px h-4 bg-border/50 mx-2 shrink-0" />
-
+        <div className="flex flex-wrap items-center justify-center gap-0.5">
           <ToolBtn
             active={mode === "time"}
             title="time mode (m)"

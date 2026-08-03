@@ -51,7 +51,7 @@
 - [x] **Contador de tiempo restante** animado con anillo (circular).
 - [x] **Tooltips** en los botones de la toolbar.
 - [x] **Atajos de teclado ampliados**: `1/2/3/4` cambiar duración, `p` puntuación, `n` números, `c` capitales, `l` largo, `m` modo, `Esc` terminar/results.
-- [x] **Responsive**: en mobile, toolbar con scroll horizontal y botones más grandes táctiles.
+- [x] **Responsive**: toolbar en dos filas centradas con wrap (fila 1: punctuation/numbers/capitals/long/number/symbol; fila 2: modos + duración), sin scroll horizontal — todo visible en mobile.
 
 ---
 
