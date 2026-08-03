@@ -92,8 +92,8 @@
 ### 3.3 Bundles / assets
 
 - [ ] **Code-splitting**: cargar solo lo necesario; el bundle JS actual ~235KB gzip ~75KB (ok), pero recharts/ui no usados deberían quitarse de deps o importarse perezosamente.
-- [ ] **Eliminar dependencias sin uso**: revisar `package.json` (radix, cmdk, vaul, recharts, etc.) — muchas pueden no usarse en la app actual.
-- [ ] **Analizar bundle**: `vite build` con `rollup-plugin-visualizer`.
+- [x] **Eliminar dependencias sin uso**: borradas 54 de 62 componentes `ui/` (quedan button, dialog, input, label, select, slider, switch, dropdown-menu). Quitadas 12 deps de `package.json` (cmdk, vaul, embla-carousel-react, react-day-picker, input-otp, react-hook-form, @hookform/resolvers, react-resizable-panels, sonner, next-themes, date-fns, zod). `canvas-confetti` movido de devDependencies a dependencies (se usa en runtime). -16 paquetes en `npm install`.
+- [x] **Analizar bundle**: `vite build` con `rollup-plugin-visualizer` (`npm run build:analyze`, reporte en `dist/bundle-report.html`). Resultado (gzip): recharts 185KB (ya lazy en ResultsScreen ✓), react-dom 95KB, radix-ui 44KB (en chunk principal), código propio 36KB, total 540KB. No queda limpieza obvia en deps; optimización real = code-splitting de radix-ui (3.1/3.4) o migrar de recharts a SVG propio.
 - [x] **Lazy-load** de `Words`/UI de resultados.
 
 ### 3.4 Otros
