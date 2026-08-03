@@ -1,0 +1,173 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Typing-specific semantic colors */
+  --color-typer-correct: var(--typer-correct);
+  --color-typer-wrong: var(--typer-wrong);
+  --color-typer-wrong-dim: var(--typer-wrong-dim);
+  --color-typer-untyped: var(--typer-untyped);
+  --color-typer-extra: var(--typer-extra);
+  --color-typer-caret: var(--typer-caret);
+  --color-typer-word-border: var(--typer-word-border);
+}
+
+/* ── TyperReflex – light gray minimalist palette ── */
+:root {
+  --radius: 0.5rem;
+
+  /* Core surface – neutral light gray */
+  --background:          oklch(0.95 0 0);         /* #f2f2f2 – clean light gray */
+  --foreground:          oklch(0.16 0 0);          /* near-black */
+
+  --card:                oklch(0.98 0 0);          /* near-white */
+  --card-foreground:     oklch(0.16 0 0);
+
+  --popover:             oklch(0.99 0 0);
+  --popover-foreground:  oklch(0.16 0 0);
+
+  /* Primary – crimson accent */
+  --primary:             oklch(0.52 0.22 22);      /* deep crimson */
+  --primary-foreground:  oklch(0.97 0 0);
+
+  /* Secondary / muted */
+  --secondary:           oklch(0.90 0 0);          /* slightly darker gray */
+  --secondary-foreground:oklch(0.16 0 0);
+
+  --muted:               oklch(0.91 0 0);
+  --muted-foreground:    oklch(0.50 0 0);          /* medium gray */
+
+  --accent:              oklch(0.91 0 0);
+  --accent-foreground:   oklch(0.16 0 0);
+
+  --destructive:         oklch(0.52 0.22 22);
+  --destructive-foreground: oklch(0.97 0 0);
+
+  --border:              oklch(0.86 0 0);          /* visible gray border */
+  --input:               oklch(0.86 0 0);
+  --ring:                oklch(0.52 0.22 22);
+
+  --sidebar:             oklch(0.92 0 0);
+  --sidebar-foreground:  oklch(0.16 0 0);
+  --sidebar-primary:     oklch(0.52 0.22 22);
+  --sidebar-primary-foreground: oklch(0.97 0 0);
+  --sidebar-accent:      oklch(0.91 0 0);
+  --sidebar-accent-foreground: oklch(0.16 0 0);
+  --sidebar-border:      oklch(0.86 0 0);
+  --sidebar-ring:        oklch(0.52 0.22 22);
+
+  /* ── Typing-specific tokens ── */
+  --typer-correct:       oklch(0.18 0 0);          /* correctly typed – very dark */
+  --typer-wrong:         oklch(0.52 0.25 22);      /* incorrectly typed – vivid crimson */
+  --typer-wrong-dim:     oklch(0.68 0.14 22);      /* completed word with errors (border) */
+  --typer-untyped:       oklch(0.65 0 0);          /* not yet typed – medium gray */
+  --typer-extra:         oklch(0.48 0.22 25);      /* extra chars – reddish */
+  --typer-caret:         oklch(0.52 0.22 22);      /* blinking cursor – matches primary */
+  --typer-word-border:   oklch(0.75 0 0);          /* underline on current word – subtle gray */
+
+  /* ── Typer layout tokens ── */
+  --typer-font-size:     1.5rem;
+  --typer-line-height:   2.75rem;
+  --typer-word-gap-x:    0.7rem;
+}
+
+/* Dark mode – original crimson/dark palette */
+.dark {
+  --background:          oklch(0.13 0.018 16);
+  --foreground:          oklch(0.87 0.012 20);
+  --card:                oklch(0.17 0.016 16);
+  --card-foreground:     oklch(0.87 0.012 20);
+  --popover:             oklch(0.18 0.016 16);
+  --popover-foreground:  oklch(0.87 0.012 20);
+  --primary:             oklch(0.68 0.24 22);
+  --primary-foreground:  oklch(0.97 0 0);
+  --secondary:           oklch(0.20 0.014 16);
+  --secondary-foreground:oklch(0.87 0.012 20);
+  --muted:               oklch(0.20 0.012 16);
+  --muted-foreground:    oklch(0.62 0.028 18);
+  --accent:              oklch(0.23 0.014 16);
+  --accent-foreground:   oklch(0.87 0.012 20);
+  --destructive:         oklch(0.60 0.22 22);
+  --destructive-foreground: oklch(0.97 0 0);
+  --border:              oklch(0.24 0.016 16);
+  --input:               oklch(0.24 0.016 16);
+  --ring:                oklch(0.62 0.22 22);
+  --sidebar:             oklch(0.16 0.016 16);
+  --sidebar-foreground:  oklch(0.87 0.012 20);
+  --sidebar-primary:     oklch(0.62 0.22 22);
+  --sidebar-primary-foreground: oklch(0.97 0 0);
+  --sidebar-accent:      oklch(0.23 0.014 16);
+  --sidebar-accent-foreground: oklch(0.87 0.012 20);
+  --sidebar-border:      oklch(0.24 0.016 16);
+  --sidebar-ring:        oklch(0.62 0.22 22);
+
+  --typer-correct:       oklch(0.93 0.008 20);
+  --typer-wrong:         oklch(0.65 0.26 22);
+  --typer-wrong-dim:     oklch(0.50 0.18 22);
+  --typer-untyped:       oklch(0.58 0.020 18);
+  --typer-extra:         oklch(0.57 0.24 24);
+  --typer-caret:         oklch(0.73 0.24 22);
+  --typer-word-border:   oklch(0.56 0.042 18);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* ── Caret animation ── */
+@keyframes caretBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+.typer-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1.25em;
+  background-color: var(--typer-caret);
+  margin-right: -2px;
+  position: relative;
+  top: 0.1em;
+  vertical-align: middle;
+  animation: caretBlink 1.06s step-end infinite;
+  border-radius: 1px;
+}
