@@ -43,7 +43,7 @@ function Footer() {
   const totalHours = Math.round(stats.totalTimeSecs / 360) / 10;
 
   return (
-    <footer className="px-8 py-6 shrink-0 flex items-center justify-center gap-6 flex-wrap">
+    <footer className="w-full max-w-4xl mx-auto px-4 py-6 shrink-0 flex items-center justify-center gap-6 flex-wrap">
       <span className="font-mono text-xs text-typer-untyped tabular-nums">
         {stats.tests} tests
       </span>
@@ -83,8 +83,8 @@ function App() {
     <div className="min-h-screen bg-background flex flex-col">
       <Splash visible={splashVisible} />
 
-      {/* Header */}
-      <header className="px-8 py-5 flex items-center justify-between shrink-0">
+      {/* Header – aligned with typing zone */}
+      <header className="w-full max-w-4xl mx-auto px-4 py-5 flex items-center justify-between shrink-0">
         <span className="font-mono text-2xl font-bold text-primary tracking-tight select-none">
           TyperReflex
         </span>
