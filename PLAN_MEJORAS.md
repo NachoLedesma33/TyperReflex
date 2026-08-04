@@ -1,6 +1,6 @@
 # TyperReflex – Plan de Mejoras
 
-> Estado: Fases 0–4 completas, **sección 1 completa** (componentes/funcionalidad) y **sección 2 completa** (estilos/UI/UX). Pendiente: punto 17 (backend/multiplayer, decisión separada), secciones 3–10 (perf restante, tests, fuentes restantes, a11y restante, UX, tooling, analytics opcional).
+> Estado: Fases 0–4 completas, **sección 1 completa** (componentes/funcionalidad), **sección 2 completa** (estilos/UI/UX) y **secciones 4.1–4.2 completas** (tests unit + component, 70 tests). Pendiente: punto 17 (backend/multiplayer, decisión separada), sección 4.3 (E2E/CI), secciones 6–10 (a11y restante, UX, tooling, analytics opcional).
 > Referencias de código: `src/components/TypingTest.tsx`, `src/lib/words.ts`, `src/index.css`, `src/App.tsx`.
 
 ---
@@ -108,19 +108,19 @@
 
 ### 4.1 Unit (Vitest + Testing Library)
 
-- [ ] **`calcResults`**: WPM, raw WPM, accuracy, chars correctos/incorrectos/extra, edge cases (0s, palabras vacías).
-- [ ] **`getCharStatuses`** y **`wordHasError`**: matrices de caracteres correctos/incorrectos/extra.
-- [ ] **`generateWords`**: cantidad exacta, distribución de puntuación/números, sin caracteres extraños.
-- [ ] **Caret/posición**: lógica de posición de caret en palabra actual y final.
-- [ ] **`cn`** y helpers de `utils.ts`.
-- [ ] **Store/preferencias** (si se implementan): defaults, persistencia, reset.
+- [x] **`calcResults`**: WPM, raw WPM, accuracy, chars correctos/incorrectos/extra, edge cases (0s, palabras vacías).
+- [x] **`getCharStatuses`** y **`wordHasError`**: matrices de caracteres correctos/incorrectos/extra.
+- [x] **`generateWords`**: cantidad exacta, distribución de puntuación/números, sin caracteres extraños.
+- [x] **Caret/posición**: lógica de posición de caret en palabra actual y final (bar caret renderizado en el test de `TypingTest`; la posición deriva de `getCharStatuses`/`typed.length` ya unit-testeados).
+- [x] **`cn`** y helpers de `utils.ts`.
+- [x] **Store/preferencias**: defaults, persistencia, reset, presets (`settings.test.ts`).
 
 ### 4.2 Component
 
-- [ ] **`TypingTest`**: render inicial, arranque con primera tecla, completar palabra con espacio, cambio de modo/duración, fin de test en modo words, reset con Tab, click-to-focus.
-- [ ] **`ThemeProvider`**: toggling con tecla `d`, respeto a sistema, persistencia en localStorage.
-- [ ] **`ResultsScreen`**: render de stats, restart.
-- [ ] **`ToolBtn`**: estado activo/inactivo.
+- [x] **`TypingTest`**: render inicial, arranque con primera tecla, completar palabra con espacio, cambio de modo/duración, fin de test en modo words, reset con Tab, click-to-focus.
+- [x] **`ThemeProvider`**: toggling con tecla `d`, respeto a sistema, persistencia en localStorage.
+- [x] **`ResultsScreen`**: render de stats, restart.
+- [x] **`ToolBtn`**: estado activo/inactivo.
 
 ### 4.3 E2E (Playwright)
 
@@ -205,7 +205,7 @@
 ### Fase 0 – Base de calidad
 
 1. [x] ESLint/Prettier + Husky + Convention Commits.
-2. [ ] Tests unit (Vitest) de `calcResults`, `getCharStatuses`, `generateWords`.
+2. [x] Tests unit (Vitest) de `calcResults`, `getCharStatuses`, `generateWords`.
 3. Setup Playwright con 2-3 tests E2E básicos.
 4. Limpiar deps sin uso + `npm audit`.
 
@@ -251,3 +251,4 @@
 - Zen mode: pool inicial de 1000 palabras con recarga automática (`ZEN_REFILL_AT`), termina con botón `finish`/Esc, guarda con `option=0`.
 - Stats globales (`typerreflex-stats`) y heatmap de teclas acumulado (`typerreflex-key-heatmap`) en localStorage, actualizados al terminar cada test. `recordStats` emite evento `typerreflex-stats-updated` que refresca el footer en vivo.
 - El heatmap de teclas captura sustituciones (tecla equivocada) y omisiones (chars salteados al cerrar palabra con espacio), normalizadas a minúscula.
+- Tests: Vitest + Testing Library en jsdom (`npm test`/`npm run test:watch`). Helpers de typing extraídos a `src/lib/typing.ts` (puros, testeables). En tests de `TypingTest` se mockean `generateWords`, `sound`, `history`, `stats` y el `ResultsScreen` lazy; **no usar fake timers** (cuelgan a user-event) — los intervalos reales de 200ms/1s no interfieren con asserts síncronos. `LONG_WORDS` exportado para testear el pool por membresía.
