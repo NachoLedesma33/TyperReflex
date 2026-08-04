@@ -6,8 +6,9 @@ test("theme toggles with the d key and persists after reload", async ({
   await page.goto("/");
   await expect(page.locator("html")).toHaveClass(/light/);
 
-  // The typing input auto-focuses on mount; blur so the global `d` shortcut
-  // sees a non-editable target and actually toggles the theme.
+  // The typing input auto-focuses on mount; wait for it so the subsequent blur
+  // lands, then blur so the global `d` shortcut sees a non-editable target.
+  await expect(page.getByLabel("Typing input")).toBeFocused();
   await page.evaluate(() => {
     (document.activeElement as HTMLElement | null)?.blur();
   });

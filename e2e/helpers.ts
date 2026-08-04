@@ -10,7 +10,7 @@ export async function typeCurrentWord(page: Page): Promise<void> {
   if (word === null || word.length === 0) {
     throw new Error("could not read the current word from the typing area");
   }
-  await page.keyboard.type(word + " ");
+  await page.keyboard.type(word + " ", { delay: 10 });
 }
 
 export async function setWordsMode(page: Page, count = 10): Promise<void> {

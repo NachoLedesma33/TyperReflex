@@ -31,6 +31,40 @@ test("toolbar buttons are keyboard navigable with Tab", async ({ page }) => {
   ).toBeFocused();
 });
 
+test("countdown timer exposes a non-spamming timer role", async ({ page }) => {
+  await page.goto("/");
+  const area = page.getByRole("textbox", { name: "Typing area" });
+  await expect(area).toBeVisible();
+
+  await area.click();
+  await page.keyboard.type("a");
+
+  const timer = page.getByRole("timer");
+  await expect(timer).toBeVisible();
+  await expect(timer).toHaveAttribute("aria-label", /seconds remaining/);
+});
+
+test("settings and history controls expose accessible names", async ({
+  page,
+}) => {
+  await page.goto("/");
+
+  await page.getByRole("button", { name: "Settings" }).click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole("slider", { name: "Font size" })).toBeVisible();
+  await expect(dialog.getByRole("slider", { name: "Word gap" })).toBeVisible();
+  await expect(dialog.getByRole("combobox", { name: "Font" })).toBeVisible();
+  await dialog.getByRole("button", { name: "Close" }).click();
+
+  await page.getByRole("button", { name: "History" }).click();
+  const history = page.getByRole("dialog");
+  await expect(history).toBeVisible();
+  await expect(
+    history.getByRole("button", { name: "all", exact: true })
+  ).toHaveAttribute("aria-pressed", "true");
+});
+
 test("untyped text meets WCAG AA contrast on the default light theme", async ({
   page,
 }) => {
