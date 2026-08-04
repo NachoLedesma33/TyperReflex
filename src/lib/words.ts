@@ -389,7 +389,7 @@ const COMMON_WORDS = [
   "known",
 ];
 
-const LONG_WORDS = [
+export const LONG_WORDS = [
   "different",
   "together",
   "children",

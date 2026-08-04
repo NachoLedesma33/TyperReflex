@@ -151,7 +151,7 @@ export const DEFAULT_SETTINGS: Settings = {
   shakeEnabled: false,
 };
 
-function loadSettings(): Settings {
+export function loadSettings(): Settings {
   if (typeof window === "undefined") return DEFAULT_SETTINGS;
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
@@ -176,7 +176,7 @@ const SettingsContext = React.createContext<SettingsContextValue | undefined>(
   undefined
 );
 
-function applyCssVars(settings: Settings) {
+export function applyCssVars(settings: Settings) {
   const root = document.documentElement;
 
   root.classList.remove(
