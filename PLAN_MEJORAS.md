@@ -1,6 +1,6 @@
 # TyperReflex – Plan de Mejoras
 
-> Estado: Fases 0–4 completas, **sección 1 completa** (componentes/funcionalidad), **sección 2 completa** (estilos/UI/UX) y **secciones 4.1–4.2 completas** (tests unit + component, 70 tests). Pendiente: punto 17 (backend/multiplayer, decisión separada), sección 4.3 (E2E/CI), secciones 6–10 (a11y restante, UX, tooling, analytics opcional).
+> Estado: Fases 0–4 completas, **sección 1 completa** (componentes/funcionalidad), **sección 2 completa** (estilos/UI/UX) y **secciones 4.1–4.3 completas** (tests unit + component + E2E/CI, 70 unit + 27 E2E). Pendiente: punto 17 (backend/multiplayer, decisión separada), secciones 6–10 (a11y restante, UX, tooling, analytics opcional).
 > Referencias de código: `src/components/TypingTest.tsx`, `src/lib/words.ts`, `src/index.css`, `src/App.tsx`.
 
 ---
@@ -124,12 +124,12 @@
 
 ### 4.3 E2E (Playwright)
 
-- [ ] **Setup Playwright** + config con proyecto Chrome/WebKit/Firefox.
-- [ ] **Flujo completo**: abrir → seleccionar modo → teclear con `keyboard.type` → verificar resultados y que se pueda reiniciar.
-- [ ] **Persistencia**: recargar y verificar tema/preferencias guardadas.
-- [ ] **Responsive**: viewport mobile → toolbar usable.
-- [ ] **Accesibilidad básica**: Tab navegación, aria-labels, contraste.
-- [ ] **CI**: correr unit + e2e en GitHub Actions (push a main + PRs).
+- [x] **Setup Playwright** + config con proyecto Chrome/WebKit/Firefox.
+- [x] **Flujo completo**: abrir → seleccionar modo → teclear con `keyboard.type` → verificar resultados y que se pueda reiniciar.
+- [x] **Persistencia**: recargar y verificar tema/preferencias guardadas.
+- [x] **Responsive**: viewport mobile → toolbar usable.
+- [x] **Accesibilidad básica**: Tab navegación, aria-labels, contraste.
+- [x] **CI**: correr unit + e2e en GitHub Actions (push a main + PRs).
 
 ---
 
