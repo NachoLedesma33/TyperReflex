@@ -1,6 +1,6 @@
 # TyperReflex – Plan de Mejoras
 
-> Estado: Fases 0–4 completas, **sección 1 completa** (componentes/funcionalidad), **sección 2 completa** (estilos/UI/UX) y **secciones 4.1–4.3 completas** (tests unit + component + E2E/CI, 70 unit + 27 E2E). Pendiente: punto 17 (backend/multiplayer, decisión separada), secciones 6–10 (a11y restante, UX, tooling, analytics opcional).
+> Estado: Fases 0–4 completas, **sección 1 completa** (componentes/funcionalidad), **sección 2 completa** (estilos/UI/UX), **sección 4 completa** (tests unit + component + E2E/CI: 70 unit + 36 E2E) y **sección 6 completa** (a11y). Pendiente: punto 17 (backend/multiplayer, decisión separada), secciones 7 (UX restante), 8 (tooling restante), 9 (analytics opcional).
 > Referencias de código: `src/components/TypingTest.tsx`, `src/lib/words.ts`, `src/index.css`, `src/App.tsx`.
 
 ---
@@ -148,10 +148,10 @@
 - [x] **Contraste** de `--typer-untyped` en ambos temas (verificar WCAG AA).
 - [x] **Focus visible** en ToolBtn y botones.
 - [x] **Live region** para anunciar el resultado final a lectores de pantalla.
-- [ ] **`aria-live`** para el timer.
+- [x] **`aria-live`** para el timer.
 - [x] **Reducir movimiento**: `prefers-reduced-motion` → desactivar transición de scroll y blink del caret.
-- [ ] **Labels** en inputs/controles.
-- [ ] **Zoom al 200%** sin romper layout.
+- [x] **Labels** en inputs/controles.
+- [x] **Zoom al 200%** sin romper layout.
 
 ---
 
@@ -251,4 +251,7 @@
 - Zen mode: pool inicial de 1000 palabras con recarga automática (`ZEN_REFILL_AT`), termina con botón `finish`/Esc, guarda con `option=0`.
 - Stats globales (`typerreflex-stats`) y heatmap de teclas acumulado (`typerreflex-key-heatmap`) en localStorage, actualizados al terminar cada test. `recordStats` emite evento `typerreflex-stats-updated` que refresca el footer en vivo.
 - El heatmap de teclas captura sustituciones (tecla equivocada) y omisiones (chars salteados al cerrar palabra con espacio), normalizadas a minúscula.
+- A11y (sección 6): el timer usa `role="timer"` + `aria-label` (no se re-anuncia cada segundo; el arranque del test sí se anuncia vía live region polite con la duración). Sliders del panel de settings reenvían `id`/`aria-label` al thumb (`ui/slider.tsx`); filtros del historial con `aria-pressed`.
+- Bugs encontrados por E2E: (1) `<main>` con `-mt-12` se superponía al header y bloqueaba los clicks de Settings/History/Stats/theme → fix `relative z-10` en el header; (2) `aria-label`/`id` de Radix Slider quedaban en el root y no en el thumb (`role="slider"` sin nombre) → forward explícito en `ui/slider.tsx`.
+- E2E webkit: `page.keyboard.type` rápido pierde teclas → usar `{ delay: 10 }`; y esperar el auto-focus del input (`toBeFocused`) antes de blur en el test del atajo `d`.
 - Tests: Vitest + Testing Library en jsdom (`npm test`/`npm run test:watch`). Helpers de typing extraídos a `src/lib/typing.ts` (puros, testeables). En tests de `TypingTest` se mockean `generateWords`, `sound`, `history`, `stats` y el `ResultsScreen` lazy; **no usar fake timers** (cuelgan a user-event) — los intervalos reales de 200ms/1s no interfieren con asserts síncronos. `LONG_WORDS` exportado para testear el pool por membresía.
