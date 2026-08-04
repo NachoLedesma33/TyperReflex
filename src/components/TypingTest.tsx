@@ -172,7 +172,11 @@ function TimerRing({ timeLeft, total }: { timeLeft: number; total: number }) {
   const c = 2 * Math.PI * r;
   const frac = Math.max(0, Math.min(1, timeLeft / total));
   return (
-    <div className="relative size-10">
+    <div
+      className="relative size-10"
+      role="timer"
+      aria-label={`${timeLeft} seconds remaining`}
+    >
       <svg viewBox="0 0 40 40" className="size-10 -rotate-90">
         <circle
           cx="20"
@@ -426,6 +430,7 @@ export function TypingTest() {
   const [isNewRecord, setIsNewRecord] = useState(false);
   const [keyHeatmap, setKeyHeatmap] = useState<Record<string, number>>({});
   const [errorPairs, setErrorPairs] = useState<Record<string, number>>({});
+  const [liveAnnounce, setLiveAnnounce] = useState("");
 
   const { settings } = useSettings();
   const soundEnabledRef = useRef(settings.soundEnabled);
@@ -668,6 +673,17 @@ export function TypingTest() {
       finishTest();
     }
   }, [timeLeft, gameStatus, finishTest]);
+
+  // Announce the test start (with its duration) once, via a polite live region.
+  // The ticking countdown itself uses role="timer" so it is not re-announced.
+  const prevStatusRef = useRef<GameStatus>("idle");
+  useEffect(() => {
+    const prev = prevStatusRef.current;
+    prevStatusRef.current = gameStatus;
+    if (prev === "idle" && gameStatus === "running" && mode === "time") {
+      setLiveAnnounce(`test started, ${timeOption} seconds remaining`);
+    }
+  }, [gameStatus, mode, timeOption]);
 
   // ── Input handler ────────────────────────────────────────────────────────────
 
@@ -947,6 +963,9 @@ export function TypingTest() {
 
       {/* ── Counter / timer ── */}
       <div className="h-10 flex items-center">
+        <span aria-live="polite" className="sr-only">
+          {liveAnnounce}
+        </span>
         {gameStatus === "idle" && (
           <span className="font-mono text-2xl text-typer-untyped">
             {mode === "time"
@@ -960,7 +979,10 @@ export function TypingTest() {
           <TimerRing timeLeft={timeLeft} total={timeOption} />
         )}
         {gameStatus === "running" && mode === "words" && (
-          <span className="font-mono text-3xl font-semibold tabular-nums leading-none text-primary">
+          <span
+            className="font-mono text-3xl font-semibold tabular-nums leading-none text-primary"
+            aria-label={`${currentWordIdx} of ${wordOption} words completed`}
+          >
             {currentWordIdx}/{wordOption}
           </span>
         )}

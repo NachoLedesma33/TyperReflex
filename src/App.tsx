@@ -99,7 +99,7 @@ function App() {
       <Splash visible={splashVisible} />
 
       {/* Header – aligned with typing zone */}
-      <header className="w-full max-w-4xl mx-auto px-4 py-5 flex items-center justify-between shrink-0">
+      <header className="relative z-10 w-full max-w-4xl mx-auto px-4 py-5 flex items-center justify-between shrink-0">
         <span className="font-mono text-2xl font-bold text-primary tracking-tight select-none">
           TyperReflex
         </span>

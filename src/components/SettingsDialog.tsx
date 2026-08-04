@@ -89,6 +89,7 @@ export function SettingsDialog() {
             </div>
             <Slider
               id="settings-font-size"
+              aria-label="Font size"
               min={1}
               max={2.5}
               step={0.125}
@@ -108,6 +109,7 @@ export function SettingsDialog() {
             </div>
             <Slider
               id="settings-gap"
+              aria-label="Word gap"
               min={0.3}
               max={1.2}
               step={0.05}

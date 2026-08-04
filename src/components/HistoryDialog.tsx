@@ -101,6 +101,7 @@ export function HistoryDialog() {
             <button
               key={f}
               onClick={() => setFilter(f)}
+              aria-pressed={filter === f}
               className={cn(
                 "px-2.5 py-1 rounded font-mono text-xs transition-colors focus-visible:outline-2 focus-visible:outline-primary",
                 filter === f
