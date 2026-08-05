@@ -145,7 +145,7 @@ const PRESETS_KEY = "typerreflex-presets";
 export const DEFAULT_SETTINGS: Settings = {
   fontFamily: "jetbrains",
   fontSize: 2.125,
-  wordGap: 0.7,
+  wordGap: 0.9,
   soundEnabled: false,
   palette: "crimson",
   themeId: "classic",

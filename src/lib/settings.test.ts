@@ -52,7 +52,7 @@ describe("applyCssVars", () => {
     expect(root.style.getPropertyValue("--font-mono")).toContain(
       "JetBrains Mono"
     );
-    expect(root.style.getPropertyValue("--typer-word-gap-x")).toBe("0.7rem");
+    expect(root.style.getPropertyValue("--typer-word-gap-x")).toBe("0.9rem");
   });
 
   it("removes the theme class for classic", () => {

@@ -305,8 +305,8 @@ const OptionsToolbar = memo(function OptionsToolbar({
   onToggleSymbolOnly,
 }: OptionsToolbarProps) {
   return (
-    <div className="flex flex-col items-center gap-1.5">
-      <div className="flex flex-wrap items-center justify-center gap-0.5">
+    <div className="flex flex-col items-center gap-3">
+      <div className="flex flex-wrap items-center justify-center gap-1.5">
         <ToolBtn
           active={punctuation}
           title="punctuation (p)"
@@ -357,7 +357,7 @@ const OptionsToolbar = memo(function OptionsToolbar({
         </ToolBtn>
       </div>
 
-      <div className="flex flex-wrap items-center justify-center gap-0.5">
+      <div className="flex flex-wrap items-center justify-center gap-1.5">
         <ToolBtn
           active={mode === "time"}
           title="time mode (m)"
