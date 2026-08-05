@@ -21,6 +21,9 @@ test("typing area exposes accessible names", async ({ page }) => {
 
 test("toolbar buttons are keyboard navigable with Tab", async ({ page }) => {
   await page.goto("/");
+  // The typing input auto-focuses on load; wait for that effect to settle
+  // (webkit can race it and steal focus back from the button).
+  await expect(page.getByLabel("Typing input")).toBeFocused();
   const first = page.getByRole("button", { name: "punctuation" });
   await first.focus();
   await expect(first).toBeFocused();
