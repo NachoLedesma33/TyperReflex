@@ -1,6 +1,6 @@
 # TyperReflex – Plan de Mejoras
 
-> Estado: Fases 0–4 completas, **sección 1 completa** (componentes/funcionalidad), **sección 2 completa** (estilos/UI/UX), **sección 4 completa** (tests unit + component + E2E/CI: 70 unit + 36 E2E), **sección 6 completa** (a11y) y **sección 7 completa** (UX de flujo/interacción: 78 unit + 51 E2E). Pendiente: punto 17 (backend/multiplayer, decisión separada), secciones 8 (tooling restante), 9 (analytics opcional).
+> Estado: Fases 0–4 completas, **sección 1 completa** (componentes/funcionalidad), **sección 2 completa** (estilos/UI/UX), **sección 4 completa** (tests unit + component + E2E/CI: 70 unit + 36 E2E), **sección 6 completa** (a11y), **sección 7 completa** (UX de flujo/interacción: 78 unit + 51 E2E) y **sección 8 completa** (tooling/calidad: commit convention, npm audit 0 vulns, TS strict sin any, .env.example, README + screenshots, deploy Vercel, CHANGELOG 1.0.0). Pendiente: punto 17 (backend/multiplayer, decisión separada) y sección 9 (analytics: meta-benchmark opcional).
 > Referencias de código: `src/components/TypingTest.tsx`, `src/lib/words.ts`, `src/index.css`, `src/App.tsx`.
 
 ---
@@ -172,13 +172,13 @@
 
 - [x] **ESLint + Prettier** configurados y funcionando (ya hay tsconfig estricto).
 - [x] **Husky + lint-staged** para hooks de pre-commit.
-- [ ] **Commit convention** (Conventional Commits) + script de ayuda.
-- [ ] **Actualizar/limpiar dependencias** (hay 4 vulnerabilidades en `npm audit`).
-- [ ] **TypeScript strict** completo y sin `any` implícitos.
-- [ ] **`.env` + validación** si se agregan features externas (backend, analytics).
-- [ ] **README** más completo: screenshots, deploy, scripts.
-- [ ] **Deploy**: GitHub Pages / Vercel / Netlify config.
-- [ ] **CHANGELOG** + versionado semántico.
+- [x] **Commit convention** (Conventional Commits) + script de ayuda: hook `.husky/commit-msg` valida el formato (zero-dep, `scripts/commit-validate.cjs`) + asistente interactivo `npm run commit` (`scripts/commit.cjs`).
+- [x] **Actualizar/limpiar dependencias**: `npm audit fix` → 0 vulnerabilidades (antes 4: babel, esbuild, postcss, vite — todas devDeps). Solo cambió `package-lock.json`.
+- [x] **TypeScript strict** completo y sin `any` implícitos: `strict: true` ya activo, `no-explicit-any` en ESLint, 0 usos de `any` en todo el repo (verificado por grep).
+- [x] **`.env` + validación**: se creó `.env.example` (`VITE_BASE_PATH`, para sub-path deploys) + `.gitignore` para `.env*`. Sin features externas no hace falta validación runtime.
+- [x] **README** más completo: features, stack, scripts, atajos, settings, temas, testing, convenciones, deploy Vercel, estructura y screenshots (`docs/screenshots/`, generadas con `npm run screenshots`).
+- [x] **Deploy**: **Vercel** configurado (`vercel.json`: framework vite, build `npm run build`, output `dist`, cleanUrls + rewrite SPA). `base` de Vite queda overrideable vía `VITE_BASE_PATH` por si se usa otro host sub-path.
+- [x] **CHANGELOG** + versionado semántico: `CHANGELOG.md` (Keep a Changelog) + bump a `1.0.0`.
 
 ---
 
