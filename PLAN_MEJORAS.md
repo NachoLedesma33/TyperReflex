@@ -1,6 +1,6 @@
 # TyperReflex – Plan de Mejoras
 
-> Estado: Fases 0–4 completas, **sección 1 completa** (componentes/funcionalidad), **sección 2 completa** (estilos/UI/UX), **sección 4 completa** (tests unit + component + E2E/CI: 70 unit + 36 E2E) y **sección 6 completa** (a11y). Pendiente: punto 17 (backend/multiplayer, decisión separada), secciones 7 (UX restante), 8 (tooling restante), 9 (analytics opcional).
+> Estado: Fases 0–4 completas, **sección 1 completa** (componentes/funcionalidad), **sección 2 completa** (estilos/UI/UX), **sección 4 completa** (tests unit + component + E2E/CI: 70 unit + 36 E2E), **sección 6 completa** (a11y) y **sección 7 completa** (UX de flujo/interacción: 78 unit + 51 E2E). Pendiente: punto 17 (backend/multiplayer, decisión separada), secciones 8 (tooling restante), 9 (analytics opcional).
 > Referencias de código: `src/components/TypingTest.tsx`, `src/lib/words.ts`, `src/index.css`, `src/App.tsx`.
 
 ---
@@ -157,14 +157,14 @@
 
 ## 7. UX de flujo / interacción
 
-- [ ] **Confirmar reinicio** cuando hay progreso (opcional, off por defecto).
-- [ ] **Pausa** (Esc) sin perder el test.
-- [ ] **"Terminar ahora"** antes del tiempo límite (botón/atajo) para ver resultados.
-- [ ] **Palabra incorrecta → no avanzar** opcional (modo estricto).
-- [ ] **Corrección de errores con backspace** mostrando feedback visual.
-- [ ] **Focus en el área de tipeo al cargar** sin requerir click.
+- [x] **Confirmar reinicio** cuando hay progreso (opcional, off por defecto).
+- [x] **Pausa** (Esc) sin perder el test.
+- [x] **"Terminar ahora"** antes del tiempo límite (botón/atajo) para ver resultados.
+- [x] **Palabra incorrecta → no avanzar** opcional (modo estricto).
+- [x] **Corrección de errores con backspace** mostrando feedback visual.
+- [x] **Focus en el área de tipeo al cargar** sin requerir click.
 - [x] **Feedback al completar**: animación/confeti opcional en PB.
-- [ ] **Onboarding sutil** la primera vez (tooltip "hacé click y empezá a teclear").
+- [x] **Onboarding sutil** la primera vez (tooltip "hacé click y empezá a teclear").
 
 ---
 
@@ -254,4 +254,5 @@
 - A11y (sección 6): el timer usa `role="timer"` + `aria-label` (no se re-anuncia cada segundo; el arranque del test sí se anuncia vía live region polite con la duración). Sliders del panel de settings reenvían `id`/`aria-label` al thumb (`ui/slider.tsx`); filtros del historial con `aria-pressed`.
 - Bugs encontrados por E2E: (1) `<main>` con `-mt-12` se superponía al header y bloqueaba los clicks de Settings/History/Stats/theme → fix `relative z-10` en el header; (2) `aria-label`/`id` de Radix Slider quedaban en el root y no en el thumb (`role="slider"` sin nombre) → forward explícito en `ui/slider.tsx`.
 - E2E webkit: `page.keyboard.type` rápido pierde teclas → usar `{ delay: 10 }`; y esperar el auto-focus del input (`toBeFocused`) antes de blur en el test del atajo `d`.
+- UX (sección 7): atajos de teclado (1-4, p, n, c, l, m) viven en un listener global de `window`, solo aplican en `idle` y con el foco fuera de elementos editables → "el tipeo siempre gana en el input" (fix de bug E2E donde la primera letra podía comerse el atajo, 24% de `COMMON_WORDS`). Pausa con Esc stashea el tiempo (`startTimeRef += now - pausedAt`) para excluirlo del conteo; overlay clickeable + input `readOnly`. `confirmRestart` (off por default) muestra overlay "restart? progress will be lost" solo si hay progreso. `strictMode` trunca el input y sacude la palabra (`.typer-strict-reject`) sin avanzar. Backspace correctivo → `.typer-fix-flash` (0.45s). Onboarding tooltip con localStorage `typerreflex-onboarded`. Botón `finish` en todas las modalidades mientras corre/pausado. Fix heatmap: espacios ya no se cuentan dos veces.
 - Tests: Vitest + Testing Library en jsdom (`npm test`/`npm run test:watch`). Helpers de typing extraídos a `src/lib/typing.ts` (puros, testeables). En tests de `TypingTest` se mockean `generateWords`, `sound`, `history`, `stats` y el `ResultsScreen` lazy; **no usar fake timers** (cuelgan a user-event) — los intervalos reales de 200ms/1s no interfieren con asserts síncronos. `LONG_WORDS` exportado para testear el pool por membresía.
