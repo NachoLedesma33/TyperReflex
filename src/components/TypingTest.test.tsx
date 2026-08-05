@@ -2,7 +2,7 @@ import { describe, expect, it, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { TypingTest } from "@/components/TypingTest";
-import { SettingsProvider } from "@/lib/settings";
+import { SettingsProvider, DEFAULT_SETTINGS } from "@/lib/settings";
 
 const generateWordsMock = vi.hoisted(() => vi.fn());
 
@@ -49,6 +49,14 @@ function renderTypingTest() {
   );
 }
 
+function renderTypingTestWithSettings(overrides: Record<string, unknown>) {
+  window.localStorage.setItem(
+    "typerreflex-settings",
+    JSON.stringify({ ...DEFAULT_SETTINGS, ...overrides })
+  );
+  return renderTypingTest();
+}
+
 function setupUser() {
   return userEvent.setup();
 }
@@ -59,6 +67,7 @@ function typingAreaText() {
 
 describe("TypingTest", () => {
   beforeEach(() => {
+    window.localStorage.clear();
     generateWordsMock.mockImplementation((count: number) =>
       Array.from({ length: count }, (_, i) => `w${i}`)
     );
@@ -148,12 +157,12 @@ describe("TypingTest", () => {
     expect(screen.getByText("25 words")).toBeInTheDocument();
   });
 
-  it("changes the duration with the number shortcuts while idle", async () => {
+  it("changes the duration with the number shortcuts while idle and not typing", async () => {
     const user = setupUser();
     renderTypingTest();
 
-    const input = screen.getByLabelText("Typing input");
-    input.focus();
+    // Typing always wins in the focused input, so shortcuts need focus elsewhere
+    screen.getByLabelText("Typing input").blur();
     await user.keyboard("3");
 
     expect(screen.getByText("60s")).toBeInTheDocument();
@@ -161,5 +170,139 @@ describe("TypingTest", () => {
       "aria-pressed",
       "true"
     );
+  });
+
+  it("types a shortcut letter in the focused input without triggering the shortcut", async () => {
+    const user = setupUser();
+    renderTypingTest();
+
+    await user.click(screen.getByRole("button", { name: "words" }));
+    const input = screen.getByLabelText("Typing input");
+    input.focus();
+    await user.keyboard("m");
+
+    expect(input).toHaveValue("m");
+    expect(screen.getByRole("button", { name: "words" })).toHaveAttribute(
+      "aria-pressed",
+      "true"
+    );
+  });
+
+  it("auto-focuses the typing input on load without a click", () => {
+    renderTypingTest();
+    expect(screen.getByLabelText("Typing input")).toHaveFocus();
+  });
+
+  it("shows the onboarding hint on the first visit and dismisses it on a keystroke", async () => {
+    const user = setupUser();
+    renderTypingTest();
+
+    expect(screen.getByText("click here and start typing")).toBeInTheDocument();
+
+    const input = screen.getByLabelText("Typing input");
+    input.focus();
+    await user.keyboard("h");
+
+    expect(
+      screen.queryByText("click here and start typing")
+    ).not.toBeInTheDocument();
+  });
+
+  it("pauses with Esc and resumes without losing progress", async () => {
+    const user = setupUser();
+    renderTypingTest();
+    const input = screen.getByLabelText("Typing input");
+    input.focus();
+
+    await user.keyboard("h");
+    expect(input).toHaveValue("h");
+
+    await user.keyboard("{Escape}");
+    expect(screen.getByRole("button", { name: "resume" })).toBeInTheDocument();
+    expect(input).toHaveAttribute("readonly");
+    expect(input).toHaveValue("h");
+
+    await user.keyboard("{Escape}");
+    expect(
+      screen.queryByRole("button", { name: "resume" })
+    ).not.toBeInTheDocument();
+    expect(input).not.toHaveAttribute("readonly");
+
+    await user.keyboard("e");
+    expect(input).toHaveValue("he");
+  });
+
+  it("shows a finish button while running and ends the test early", async () => {
+    const user = setupUser();
+    renderTypingTest();
+    const input = screen.getByLabelText("Typing input");
+    input.focus();
+
+    await user.keyboard("h");
+    const finish = screen.getByRole("button", { name: "finish" });
+    expect(finish).toBeInTheDocument();
+
+    await user.click(finish);
+    expect(await screen.findByText("results screen")).toBeInTheDocument();
+  });
+
+  it("does not advance past an incorrect word in strict mode", async () => {
+    const user = setupUser();
+    renderTypingTestWithSettings({ strictMode: true });
+
+    await user.click(screen.getByRole("button", { name: "words" }));
+    await user.click(screen.getByRole("button", { name: "10" }));
+
+    const input = screen.getByLabelText("Typing input");
+    input.focus();
+    await user.keyboard("xx ");
+
+    expect(screen.getByText("0/10")).toBeInTheDocument();
+    expect(input).toHaveValue("xx");
+    expect(document.querySelector(".typer-strict-reject")).toBeInTheDocument();
+
+    await user.keyboard("{Backspace}{Backspace}w0 ");
+    expect(screen.getByText("1/10")).toBeInTheDocument();
+  });
+
+  it("confirms a restart with Tab when enabled and there is progress", async () => {
+    const user = setupUser();
+    renderTypingTestWithSettings({ confirmRestart: true });
+    const input = screen.getByLabelText("Typing input");
+    input.focus();
+
+    await user.keyboard("h");
+
+    await user.keyboard("{Tab}");
+    expect(
+      screen.getByText("restart? progress will be lost")
+    ).toBeInTheDocument();
+    expect(input).toHaveValue("h");
+
+    await user.click(screen.getByRole("button", { name: "cancel" }));
+    expect(
+      screen.queryByText("restart? progress will be lost")
+    ).not.toBeInTheDocument();
+    expect(input).toHaveValue("h");
+
+    await user.keyboard("{Tab}");
+    await user.click(screen.getByRole("button", { name: "restart" }));
+    expect(screen.getByText("30s")).toBeInTheDocument();
+    expect(input).toHaveValue("");
+  });
+
+  it("flashes the corrected character when backspacing over an error", async () => {
+    const user = setupUser();
+    renderTypingTest();
+    const input = screen.getByLabelText("Typing input");
+    input.focus();
+
+    await user.keyboard("x");
+    await user.keyboard("{Backspace}");
+
+    expect(document.querySelector(".typer-fix-flash")).toBeInTheDocument();
+
+    await user.keyboard("w");
+    expect(document.querySelector(".typer-fix-flash")).not.toBeInTheDocument();
   });
 });
