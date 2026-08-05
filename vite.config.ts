@@ -7,7 +7,11 @@ import { visualizer } from "rollup-plugin-visualizer";
 import { VitePWA } from "vite-plugin-pwa";
 
 // https://vite.dev/config/
+// Base path: overridable for sub-path deploys (GitHub Pages) via VITE_BASE_PATH.
+const base = process.env.VITE_BASE_PATH || "/";
+
 export default defineConfig({
+  base,
   plugins: [
     react(),
     tailwindcss(),
