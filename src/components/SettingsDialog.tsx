@@ -140,6 +140,28 @@ export function SettingsDialog() {
             />
           </div>
 
+          <div className="flex items-center justify-between">
+            <Label htmlFor="settings-confirm-restart" className="font-mono">
+              Confirm restart
+            </Label>
+            <Switch
+              id="settings-confirm-restart"
+              checked={settings.confirmRestart}
+              onCheckedChange={(v) => updateSettings({ confirmRestart: v })}
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <Label htmlFor="settings-strict" className="font-mono">
+              Strict mode
+            </Label>
+            <Switch
+              id="settings-strict"
+              checked={settings.strictMode}
+              onCheckedChange={(v) => updateSettings({ strictMode: v })}
+            />
+          </div>
+
           <div className="flex flex-col gap-2">
             <Label htmlFor="settings-caret" className="font-mono">
               Caret style

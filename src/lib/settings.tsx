@@ -135,6 +135,8 @@ export interface Settings {
   themeId: ThemeId;
   caretStyle: "bar" | "block";
   shakeEnabled: boolean;
+  confirmRestart: boolean;
+  strictMode: boolean;
 }
 
 const STORAGE_KEY = "typerreflex-settings";
@@ -149,6 +151,8 @@ export const DEFAULT_SETTINGS: Settings = {
   themeId: "classic",
   caretStyle: "bar",
   shakeEnabled: false,
+  confirmRestart: false,
+  strictMode: false,
 };
 
 export function loadSettings(): Settings {

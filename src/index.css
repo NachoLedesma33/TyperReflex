@@ -601,6 +601,39 @@
   animation: typerShake 0.12s ease-in-out;
 }
 
+/* ── Backspace-correction flash ── */
+@keyframes typerFixFlash {
+  0% {
+    background-color: color-mix(in oklab, var(--typer-caret) 35%, transparent);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.typer-fix-flash {
+  border-radius: 2px;
+  animation: typerFixFlash 0.45s ease-out;
+}
+
+/* ── Strict-mode reject shake (word does not advance) ── */
+@keyframes typerReject {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-0.12em);
+  }
+  75% {
+    transform: translateX(0.12em);
+  }
+}
+
+.typer-strict-reject {
+  animation: typerReject 0.18s ease-in-out;
+}
+
 /* ── Word-boundary marker ── */
 .typer-word-marker {
   position: absolute;

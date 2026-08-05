@@ -53,6 +53,7 @@ const WORD_OPTIONS = [10, 25, 50, 100] as const;
 const WORDS_FOR_TIME_MODE = 300;
 const ZEN_WORD_POOL = 1000;
 const ZEN_REFILL_AT = 20;
+const ONBOARDING_KEY = "typerreflex-onboarded";
 
 // ─── Word display ─────────────────────────────────────────────────────────────
 
@@ -63,6 +64,8 @@ type WordSpanProps = {
   isCompleted: boolean;
   caretStyle: "bar" | "block";
   shakeEnabled: boolean;
+  fixFlashIdx: number;
+  strictReject: boolean;
   setRef: (el: HTMLSpanElement | null) => void;
 };
 
@@ -73,6 +76,8 @@ function WordSpanComponent({
   isCompleted,
   caretStyle,
   shakeEnabled,
+  fixFlashIdx,
+  strictReject,
   setRef,
 }: WordSpanProps) {
   const statuses =
@@ -103,7 +108,8 @@ function WordSpanComponent({
       ref={setRef}
       className={cn(
         "relative inline-flex font-mono tracking-wide",
-        isCurrent && "border-b-2 border-typer-word-border"
+        isCurrent && "border-b-2 border-typer-word-border",
+        isCurrent && strictReject && "typer-strict-reject"
       )}
       style={{
         fontSize: "var(--typer-font-size)",
@@ -129,6 +135,7 @@ function WordSpanComponent({
                 caretStyle === "block" &&
                 i === caretPos &&
                 "typer-caret-block",
+              isCurrent && i === fixFlashIdx && "typer-fix-flash",
               isCompleted &&
                 hasErrors &&
                 (status === "incorrect" || status === "untyped") &&
@@ -161,7 +168,9 @@ const WordSpan = memo(WordSpanComponent, (prev, next) => {
     prev.isCurrent === next.isCurrent &&
     prev.isCompleted === next.isCompleted &&
     prev.caretStyle === next.caretStyle &&
-    prev.shakeEnabled === next.shakeEnabled
+    prev.shakeEnabled === next.shakeEnabled &&
+    prev.fixFlashIdx === next.fixFlashIdx &&
+    prev.strictReject === next.strictReject
   );
 });
 
@@ -431,6 +440,18 @@ export function TypingTest() {
   const [keyHeatmap, setKeyHeatmap] = useState<Record<string, number>>({});
   const [errorPairs, setErrorPairs] = useState<Record<string, number>>({});
   const [liveAnnounce, setLiveAnnounce] = useState("");
+  const [isPaused, setIsPaused] = useState(false);
+  const [confirmReset, setConfirmReset] = useState(false);
+  const [fixFlashIdx, setFixFlashIdx] = useState(-1);
+  const [strictReject, setStrictReject] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    if (typeof window === "undefined") return false;
+    try {
+      return !window.localStorage.getItem(ONBOARDING_KEY);
+    } catch {
+      return false;
+    }
+  });
 
   const { settings } = useSettings();
   const soundEnabledRef = useRef(settings.soundEnabled);
@@ -477,6 +498,11 @@ export function TypingTest() {
   const onlySymbolsRef = useRef(false);
   const errorPairsRef = useRef<Record<string, number>>({});
   const keyHeatmapRef = useRef<Record<string, number>>({});
+  const isPausedRef = useRef(false);
+  const confirmResetRef = useRef(false);
+  const strictModeRef = useRef(settings.strictMode);
+  const confirmRestartRef = useRef(settings.confirmRestart);
+  const pausedAtRef = useRef(0);
 
   // Keep refs in sync
   useEffect(() => {
@@ -494,6 +520,10 @@ export function TypingTest() {
     longWordsRef.current = longWords;
     onlyNumbersRef.current = onlyNumbers;
     onlySymbolsRef.current = onlySymbols;
+    strictModeRef.current = settings.strictMode;
+    confirmRestartRef.current = settings.confirmRestart;
+    isPausedRef.current = isPaused;
+    confirmResetRef.current = confirmReset;
   }, [
     completedWords,
     currentWordIdx,
@@ -503,12 +533,16 @@ export function TypingTest() {
     timeOption,
     words,
     settings.soundEnabled,
+    settings.strictMode,
+    settings.confirmRestart,
     punctuation,
     numbers,
     capitals,
     longWords,
     onlyNumbers,
     onlySymbols,
+    isPaused,
+    confirmReset,
   ]);
 
   // ── Finish test ──────────────────────────────────────────────────────────────
@@ -565,6 +599,58 @@ export function TypingTest() {
     [recordWpm]
   );
 
+  // ── Timers ───────────────────────────────────────────────────────────────────
+
+  const startTimers = useCallback(() => {
+    if (modeRef.current === "time") {
+      timerRef.current = setInterval(() => {
+        const elapsed = (performance.now() - startTimeRef.current) / 1000;
+        const remaining = Math.max(0, Math.ceil(durationRef.current - elapsed));
+        if (remaining !== lastTickRef.current) {
+          lastTickRef.current = remaining;
+          setTimeLeft(remaining);
+        }
+        if (remaining <= 0) {
+          if (timerRef.current) {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+          }
+          finishTest();
+        }
+      }, 200);
+    }
+    dataTimerRef.current = setInterval(() => {
+      const elapsed = (performance.now() - startTimeRef.current) / 1000;
+      recordWpm(elapsed);
+    }, 1000);
+  }, [finishTest, recordWpm]);
+
+  // ── Pause / resume (Esc) ────────────────────────────────────────────────────
+
+  const pauseTest = useCallback(() => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    if (dataTimerRef.current) {
+      clearInterval(dataTimerRef.current);
+      dataTimerRef.current = null;
+    }
+    pausedAtRef.current = performance.now();
+    setIsPaused(true);
+    isPausedRef.current = true;
+    setLiveAnnounce("test paused");
+  }, []);
+
+  const resumeTest = useCallback(() => {
+    // Shift the start time forward so the paused duration does not count.
+    startTimeRef.current += performance.now() - pausedAtRef.current;
+    setIsPaused(false);
+    isPausedRef.current = false;
+    setLiveAnnounce("test resumed");
+    startTimers();
+  }, [startTimers]);
+
   // ── Reset test ───────────────────────────────────────────────────────────────
 
   const resetTest = useCallback(() => {
@@ -616,6 +702,13 @@ export function TypingTest() {
     keyHeatmapRef.current = {};
     setErrorPairs({});
     errorPairsRef.current = {};
+    setIsPaused(false);
+    isPausedRef.current = false;
+    setConfirmReset(false);
+    confirmResetRef.current = false;
+    setFixFlashIdx(-1);
+    setStrictReject(false);
+    pausedAtRef.current = 0;
   }, [timeOption]);
 
   // Focus the hidden input whenever the test is back to idle (avoids nested setTimeout)
@@ -687,9 +780,20 @@ export function TypingTest() {
 
   // ── Input handler ────────────────────────────────────────────────────────────
 
+  const dismissOnboarding = useCallback(() => {
+    setShowOnboarding(false);
+    try {
+      window.localStorage.setItem(ONBOARDING_KEY, "1");
+    } catch {
+      // ignore storage errors
+    }
+  }, []);
+
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       if (gameStatusRef.current === "finished") return;
+      if (isPausedRef.current || confirmResetRef.current) return;
+      setStrictReject(false);
       const value = e.target.value;
       const prevValue = currentInputRef.current;
       currentInputRef.current = value;
@@ -700,44 +804,19 @@ export function TypingTest() {
 
       // Start test on first character
       if (gameStatusRef.current === "idle" && value.length > 0) {
+        dismissOnboarding();
         startTimeRef.current = performance.now();
         setGameStatus("running");
         gameStatusRef.current = "running";
         recordWpm(0);
-
-        if (modeRef.current === "time") {
-          durationRef.current = timeOptionRef.current;
-          lastTickRef.current = timeOptionRef.current;
-          timerRef.current = setInterval(() => {
-            const elapsed = (performance.now() - startTimeRef.current) / 1000;
-            const remaining = Math.max(
-              0,
-              Math.ceil(durationRef.current - elapsed)
-            );
-            if (remaining !== lastTickRef.current) {
-              lastTickRef.current = remaining;
-              setTimeLeft(remaining);
-            }
-            if (remaining <= 0) {
-              if (timerRef.current) {
-                clearInterval(timerRef.current);
-                timerRef.current = null;
-              }
-              finishTest();
-            }
-          }, 200);
-        }
-
-        dataTimerRef.current = setInterval(() => {
-          const elapsed = (performance.now() - startTimeRef.current) / 1000;
-          recordWpm(elapsed);
-        }, 1000);
+        startTimers();
       }
 
       // Capture mistyped keys for the heatmap
       {
         const word = wordsStateRef.current[currentWordIdxRef.current] ?? "";
         for (let i = prevValue.length; i < value.length; i++) {
+          if (value[i] === " ") continue;
           const expected = word[i]?.toLowerCase();
           if (expected && value[i] !== word[i]) {
             keyHeatmapRef.current[expected] =
@@ -749,11 +828,34 @@ export function TypingTest() {
         }
       }
 
+      // Visual feedback when correcting an error with backspace
+      if (value.length < prevValue.length) {
+        const word = wordsStateRef.current[currentWordIdxRef.current] ?? "";
+        const removed = prevValue[value.length];
+        const removedWrong =
+          removed !== undefined &&
+          (value.length >= word.length || removed !== word[value.length]);
+        setFixFlashIdx(removedWrong ? value.length : -1);
+      } else {
+        setFixFlashIdx(-1);
+      }
+
       // Space → complete word
       if (value.endsWith(" ") && value.trim().length > 0) {
         const typed = value.trim();
         const word = wordsStateRef.current[currentWordIdxRef.current] ?? "";
         const isCorrect = typed === word;
+
+        // Strict mode: never advance past a word with errors
+        if (strictModeRef.current && !isCorrect) {
+          const trimmed = value.slice(0, -1);
+          currentInputRef.current = trimmed;
+          setCurrentInput(trimmed);
+          setFixFlashIdx(-1);
+          if (soundEnabledRef.current) playErrorSound();
+          setStrictReject(true);
+          return;
+        }
 
         // Missed chars (word finished early with space)
         for (let i = typed.length; i < word.length; i++) {
@@ -772,6 +874,8 @@ export function TypingTest() {
         setCompletedWords(newCompleted);
         setCurrentInput("");
         currentInputRef.current = "";
+        setFixFlashIdx(-1);
+        setStrictReject(false);
 
         const nextIdx = currentWordIdxRef.current + 1;
         currentWordIdxRef.current = nextIdx;
@@ -806,7 +910,7 @@ export function TypingTest() {
         setCurrentInput(value);
       }
     },
-    [finishTest, recordWpm]
+    [finishTest, recordWpm, startTimers, dismissOnboarding]
   );
 
   // ── Option toggles (mutually exclusive dedicated modes) ─────────────────────
@@ -835,22 +939,62 @@ export function TypingTest() {
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       const k = e.key.toLowerCase();
 
+      // While a restart-confirmation overlay is open, only Esc closes it
+      if (confirmResetRef.current) {
+        if (k === "escape") {
+          e.preventDefault();
+          setConfirmReset(false);
+          confirmResetRef.current = false;
+          inputRef.current?.focus();
+        }
+        return;
+      }
+
       if (k === "tab") {
         e.preventDefault();
-        resetTest();
+        const hasProgress =
+          currentWordIdxRef.current > 0 || currentInputRef.current.length > 0;
+        if (confirmRestartRef.current && hasProgress) {
+          setConfirmReset(true);
+          confirmResetRef.current = true;
+        } else {
+          resetTest();
+        }
         return;
       }
 
-      if (k === "escape" && gameStatusRef.current === "running") {
-        e.preventDefault();
-        finishTest();
+      if (k === "escape") {
+        if (gameStatusRef.current === "running") {
+          e.preventDefault();
+          if (isPausedRef.current) {
+            resumeTest();
+          } else {
+            pauseTest();
+          }
+        }
         return;
       }
+    },
+    [resetTest, pauseTest, resumeTest]
+  );
 
-      // Shortcuts only while idle (letters/digits must still type during a test)
+  // Idle shortcuts (p/n/c/l/m, 1-4) live on the document: typing always wins in
+  // the focused input, so these only apply when focus is somewhere else.
+  useEffect(() => {
+    const onShortcut = (e: KeyboardEvent) => {
       if (gameStatusRef.current !== "idle") return;
       if (e.ctrlKey || e.metaKey || e.altKey) return;
-
+      const target = document.activeElement;
+      if (
+        target instanceof HTMLElement &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.tagName === "SELECT" ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+      const k = e.key.toLowerCase();
       const digit = Number(k);
       if (k >= "1" && k <= "4" && !Number.isNaN(digit)) {
         e.preventDefault();
@@ -862,7 +1006,6 @@ export function TypingTest() {
         }
         return;
       }
-
       switch (k) {
         case "p":
           e.preventDefault();
@@ -887,9 +1030,10 @@ export function TypingTest() {
           );
           break;
       }
-    },
-    [resetTest, finishTest, toggleLong]
-  );
+    };
+    window.addEventListener("keydown", onShortcut);
+    return () => window.removeEventListener("keydown", onShortcut);
+  }, [toggleLong]);
 
   // ── Click / key to focus ────────────────────────────────────────────────────
 
@@ -962,7 +1106,7 @@ export function TypingTest() {
       />
 
       {/* ── Counter / timer ── */}
-      <div className="h-10 flex items-center">
+      <div className="h-10 flex items-center gap-3">
         <span aria-live="polite" className="sr-only">
           {liveAnnounce}
         </span>
@@ -987,12 +1131,20 @@ export function TypingTest() {
           </span>
         )}
         {gameStatus === "running" && mode === "zen" && (
-          <button
-            onClick={() => finishTest()}
-            className="font-mono text-xl text-typer-untyped hover:text-primary transition-colors"
-          >
-            finish
-          </button>
+          <span className="font-mono text-2xl text-typer-untyped">zen</span>
+        )}
+        {(gameStatus === "running" || isPaused) && (
+          <div className="ml-auto flex items-center gap-3">
+            {isPaused && (
+              <span className="font-mono text-xl text-primary">paused</span>
+            )}
+            <button
+              onClick={() => finishTest()}
+              className="font-mono text-xl text-typer-untyped hover:text-primary transition-colors"
+            >
+              finish
+            </button>
+          </div>
         )}
       </div>
 
@@ -1010,6 +1162,21 @@ export function TypingTest() {
             className="h-full bg-primary transition-[width] duration-200 ease-linear"
             style={{ width: `${progressPct}%` }}
           />
+        </div>
+      )}
+
+      {/* ── First-time onboarding hint ── */}
+      {showOnboarding && gameStatus === "idle" && (
+        <div className="flex items-center justify-center gap-2 font-mono text-sm text-typer-untyped">
+          <span>click here and start typing</span>
+          <button
+            type="button"
+            aria-label="dismiss onboarding tip"
+            onClick={dismissOnboarding}
+            className="text-typer-untyped hover:text-primary transition-colors"
+          >
+            ×
+          </button>
         </div>
       )}
 
@@ -1049,13 +1216,15 @@ export function TypingTest() {
 
               return (
                 <WordSpan
-                  key={`${idx}-${word}`}
+                  key={`${idx}-${word}-${isCurrent && strictReject ? "rejected" : ""}`}
                   word={word}
                   typed={typed}
                   isCurrent={isCurrent}
                   isCompleted={isCompleted}
                   caretStyle={settings.caretStyle}
                   shakeEnabled={settings.shakeEnabled}
+                  fixFlashIdx={isCurrent ? fixFlashIdx : -1}
+                  strictReject={isCurrent && strictReject}
                   setRef={(el) => {
                     wordElsRef.current[idx] = el;
                   }}
@@ -1064,6 +1233,56 @@ export function TypingTest() {
             })}
           </div>
         </div>
+
+        {/* Paused overlay – click (or Esc) to resume */}
+        {isPaused && (
+          <button
+            type="button"
+            aria-label="resume"
+            onClick={(e) => {
+              e.stopPropagation();
+              resumeTest();
+              inputRef.current?.focus();
+            }}
+            className="absolute inset-0 z-10 flex items-center justify-center gap-2 bg-background/60 backdrop-blur-[1px] cursor-pointer font-mono text-xl text-primary"
+          >
+            paused – esc to resume
+          </button>
+        )}
+
+        {/* Restart confirmation – shown instead of resetting when enabled */}
+        {confirmReset && (
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-background/80 backdrop-blur-sm">
+            <p className="font-mono text-xl text-typer-untyped">
+              restart? progress will be lost
+            </p>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  resetTest();
+                  setConfirmReset(false);
+                  confirmResetRef.current = false;
+                  inputRef.current?.focus();
+                }}
+                className="rounded-md border border-border px-4 py-1.5 font-mono text-primary hover:bg-accent/40 transition-colors"
+              >
+                restart
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setConfirmReset(false);
+                  confirmResetRef.current = false;
+                  inputRef.current?.focus();
+                }}
+                className="rounded-md border border-border px-4 py-1.5 font-mono text-typer-untyped hover:bg-accent/40 transition-colors"
+              >
+                cancel
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Hidden input (captures all keystrokes) */}
@@ -1079,12 +1298,13 @@ export function TypingTest() {
         autoCapitalize="off"
         spellCheck={false}
         tabIndex={-1}
+        readOnly={isPaused || confirmReset}
         aria-label="Typing input"
       />
 
       {/* Restart hint */}
       <p className="text-center font-mono text-xs text-typer-untyped opacity-55">
-        tab – restart · esc – finish
+        tab – restart · esc – pause/resume · finish – end test
       </p>
     </div>
   );
