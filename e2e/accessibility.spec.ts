@@ -69,6 +69,9 @@ test("untyped text meets WCAG AA contrast on the default light theme", async ({
   page,
 }) => {
   await page.goto("/");
+  await expect(
+    page.getByRole("textbox", { name: "Typing area" })
+  ).toBeVisible();
   const ratio = await page.evaluate(() => {
     const el = document.querySelector(".text-typer-untyped");
     if (!el) return 0;
