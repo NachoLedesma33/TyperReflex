@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   calcResults,
+  charsMatch,
   computeLiveWpm,
   getCharStatuses,
+  normalizeKey,
   wordHasError,
 } from "@/lib/typing";
 
@@ -129,5 +131,42 @@ describe("computeLiveWpm", () => {
   it("ignores incorrect chars for wpm", () => {
     const { wpm } = computeLiveWpm([{ word: "abc", typed: "xyz" }], 60);
     expect(wpm).toBe(0);
+  });
+});
+
+describe("accent handling", () => {
+  it("normalizeKey strips diacritics and lowercases", () => {
+    expect(normalizeKey("Á")).toBe("a");
+    expect(normalizeKey("ñ")).toBe("n");
+    expect(normalizeKey("Ü")).toBe("u");
+  });
+
+  it("charsMatch is exact by default", () => {
+    expect(charsMatch("ó", "o")).toBe(false);
+    expect(charsMatch("a", "a")).toBe(true);
+  });
+
+  it("charsMatch ignores accents when insensitive", () => {
+    expect(charsMatch("ó", "o", true)).toBe(true);
+    expect(charsMatch("ñ", "n", true)).toBe(true);
+    expect(charsMatch("ü", "u", true)).toBe(true);
+  });
+
+  it("getCharStatuses treats accent-typed chars as correct when insensitive", () => {
+    expect(getCharStatuses("corazón", "corazon", true)).toEqual([
+      "correct",
+      "correct",
+      "correct",
+      "correct",
+      "correct",
+      "correct",
+      "correct",
+    ]);
+    expect(getCharStatuses("corazón", "corazon")).toContain("incorrect");
+  });
+
+  it("wordHasError is accent-insensitive aware", () => {
+    expect(wordHasError("corazón", "corazon", true)).toBe(false);
+    expect(wordHasError("corazón", "corazon")).toBe(true);
   });
 });

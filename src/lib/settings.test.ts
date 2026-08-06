@@ -48,6 +48,29 @@ describe("loadSettings", () => {
     expect(loadSettings().fontFamily).toBe("space");
   });
 
+  it("defaults to english with accents distinguished", () => {
+    expect(DEFAULT_SETTINGS.language).toBe("en");
+    expect(DEFAULT_SETTINGS.accentInsensitive).toBe(false);
+  });
+
+  it("loads a stored language and accent preference", () => {
+    window.localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ language: "es", accentInsensitive: true })
+    );
+    const s = loadSettings();
+    expect(s.language).toBe("es");
+    expect(s.accentInsensitive).toBe(true);
+  });
+
+  it("falls back to english for an unknown stored language", () => {
+    window.localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ language: "fr" })
+    );
+    expect(loadSettings().language).toBe("en");
+  });
+
   it("exposes a font stack for every option", () => {
     expect(FONT_OPTIONS).toHaveLength(5);
     for (const f of FONT_OPTIONS) {

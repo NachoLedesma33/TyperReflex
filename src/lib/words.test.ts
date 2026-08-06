@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { generateWords, LONG_WORDS } from "@/lib/words";
+import {
+  generateWords,
+  getWordPool,
+  LANGUAGES,
+  LONG_WORDS,
+  type Language,
+} from "@/lib/words";
 
 describe("generateWords", () => {
   it("returns exactly the requested count", () => {
@@ -63,5 +69,48 @@ describe("generateWords", () => {
     for (const w of words) {
       expect(LONG_WORDS).toContain(w);
     }
+  });
+});
+
+describe("language pools", () => {
+  const languages: Language[] = ["en", "es", "pt"];
+
+  it("exposes english, spanish and portuguese", () => {
+    expect(LANGUAGES.map((l) => l.id)).toEqual(["en", "es", "pt"]);
+  });
+
+  it("pools have no duplicates", () => {
+    for (const lang of languages) {
+      for (const long of [false, true]) {
+        const pool = getWordPool(lang, long);
+        expect(new Set(pool).size).toBe(pool.length);
+      }
+    }
+  });
+
+  it("generates words from the requested pool", () => {
+    for (const lang of languages) {
+      const words = generateWords(150, { language: lang });
+      const pool = new Set(getWordPool(lang, false));
+      expect(words).toHaveLength(150);
+      for (const w of words) {
+        expect(pool.has(w)).toBe(true);
+      }
+    }
+  });
+
+  it("derives long-word pools for es/pt from the common pool", () => {
+    for (const lang of ["es", "pt"] as Language[]) {
+      const long = getWordPool(lang, true);
+      expect(long.length).toBeGreaterThan(0);
+      for (const w of long) {
+        expect(w.length).toBeGreaterThanOrEqual(8);
+      }
+    }
+  });
+
+  it("spanish pool contains accented words", () => {
+    const pool = getWordPool("es", false);
+    expect(pool.some((w) => /[áéíóúüñ]/.test(w))).toBe(true);
   });
 });

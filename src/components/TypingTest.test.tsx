@@ -8,6 +8,11 @@ const generateWordsMock = vi.hoisted(() => vi.fn());
 
 vi.mock("@/lib/words", () => ({
   generateWords: generateWordsMock,
+  LANGUAGES: [
+    { id: "en", name: "English" },
+    { id: "es", name: "Español" },
+    { id: "pt", name: "Português" },
+  ],
 }));
 
 vi.mock("@/lib/sound", () => ({
