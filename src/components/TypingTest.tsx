@@ -8,14 +8,16 @@ import {
   lazy,
   Suspense,
 } from "react";
-import { generateWords } from "@/lib/words";
+import { generateWords, LANGUAGES, type Language } from "@/lib/words";
 import { cn } from "@/lib/utils";
 import { useSettings } from "@/lib/settings";
 import { playErrorSound, playKeySound } from "@/lib/sound";
 import {
   calcResults,
+  charsMatch,
   computeLiveWpm,
   getCharStatuses,
+  normalizeKey,
   wordHasError,
   type CharStatus,
   type CompletedWord,
@@ -24,6 +26,7 @@ import {
   Binary,
   CaseUpper,
   Hash,
+  Languages,
   Percent,
   Quote,
   Rows3,
@@ -273,6 +276,7 @@ type OptionsToolbarProps = {
   longWords: boolean;
   onlyNumbers: boolean;
   onlySymbols: boolean;
+  language: Language;
   setMode: React.Dispatch<React.SetStateAction<Mode>>;
   setTimeOption: React.Dispatch<React.SetStateAction<number>>;
   setWordOption: React.Dispatch<React.SetStateAction<number>>;
@@ -282,6 +286,7 @@ type OptionsToolbarProps = {
   onToggleLong: () => void;
   onToggleNumberOnly: () => void;
   onToggleSymbolOnly: () => void;
+  onSetLanguage: (language: Language) => void;
 };
 
 const OptionsToolbar = memo(function OptionsToolbar({
@@ -294,6 +299,7 @@ const OptionsToolbar = memo(function OptionsToolbar({
   longWords,
   onlyNumbers,
   onlySymbols,
+  language,
   setMode,
   setTimeOption,
   setWordOption,
@@ -303,6 +309,7 @@ const OptionsToolbar = memo(function OptionsToolbar({
   onToggleLong,
   onToggleNumberOnly,
   onToggleSymbolOnly,
+  onSetLanguage,
 }: OptionsToolbarProps) {
   return (
     <div className="typer-toolbar flex flex-col items-center gap-3">
@@ -406,6 +413,20 @@ const OptionsToolbar = memo(function OptionsToolbar({
                 {w}
               </ToolBtn>
             ))}
+
+        <span className="w-px h-4 bg-border/50 mx-2 shrink-0" />
+
+        {LANGUAGES.map((l) => (
+          <ToolBtn
+            key={l.id}
+            active={language === l.id}
+            title={`language: ${l.name} (i)`}
+            icon={Languages}
+            onClick={() => onSetLanguage(l.id)}
+          >
+            {l.id}
+          </ToolBtn>
+        ))}
       </div>
     </div>
   );
@@ -453,7 +474,7 @@ export function TypingTest() {
     }
   });
 
-  const { settings } = useSettings();
+  const { settings, updateSettings } = useSettings();
   const soundEnabledRef = useRef(settings.soundEnabled);
 
   // ── Live WPM recorder ─────────────────────────────────────────────────────────
@@ -496,6 +517,8 @@ export function TypingTest() {
   const longWordsRef = useRef(false);
   const onlyNumbersRef = useRef(false);
   const onlySymbolsRef = useRef(false);
+  const languageRef = useRef<Language>("en");
+  const accentInsensitiveRef = useRef(false);
   const errorPairsRef = useRef<Record<string, number>>({});
   const keyHeatmapRef = useRef<Record<string, number>>({});
   const mistakesRef = useRef(0);
@@ -522,6 +545,8 @@ export function TypingTest() {
     longWordsRef.current = longWords;
     onlyNumbersRef.current = onlyNumbers;
     onlySymbolsRef.current = onlySymbols;
+    languageRef.current = settings.language;
+    accentInsensitiveRef.current = settings.accentInsensitive;
     strictModeRef.current = settings.strictMode;
     confirmRestartRef.current = settings.confirmRestart;
     isPausedRef.current = isPaused;
@@ -537,6 +562,8 @@ export function TypingTest() {
     settings.soundEnabled,
     settings.strictMode,
     settings.confirmRestart,
+    settings.language,
+    settings.accentInsensitive,
     punctuation,
     numbers,
     capitals,
@@ -677,6 +704,7 @@ export function TypingTest() {
       longWords: longWordsRef.current,
       onlyNumbers: onlyNumbersRef.current,
       onlySymbols: onlySymbolsRef.current,
+      language: languageRef.current,
     });
 
     setWords(newWords);
@@ -736,6 +764,7 @@ export function TypingTest() {
     longWords,
     onlyNumbers,
     onlySymbols,
+    settings.language,
   ]);
   /* eslint-enable react-hooks/exhaustive-deps */
 
@@ -835,7 +864,7 @@ export function TypingTest() {
             mistakesRef.current += 1;
             continue;
           }
-          if (value[i] !== expected) {
+          if (!charsMatch(value[i], expected, accentInsensitiveRef.current)) {
             mistakesRef.current += 1;
             const lower = expected.toLowerCase();
             keyHeatmapRef.current[lower] =
@@ -863,7 +892,9 @@ export function TypingTest() {
       if (value.endsWith(" ") && value.trim().length > 0) {
         const typed = value.trim();
         const word = wordsStateRef.current[currentWordIdxRef.current] ?? "";
-        const isCorrect = typed === word;
+        const isCorrect = accentInsensitiveRef.current
+          ? normalizeKey(typed) === normalizeKey(word)
+          : typed === word;
 
         // Strict mode: never advance past a word with errors
         if (strictModeRef.current && !isCorrect) {
@@ -923,6 +954,7 @@ export function TypingTest() {
             longWords: longWordsRef.current,
             onlyNumbers: onlyNumbersRef.current,
             onlySymbols: onlySymbolsRef.current,
+            language: languageRef.current,
           });
           wordsStateRef.current = [...wordsStateRef.current, ...more];
           setWords(wordsStateRef.current);
@@ -958,6 +990,13 @@ export function TypingTest() {
     setLongWords(false);
     setOnlyNumbers(false);
   }, []);
+
+  const setLanguage = useCallback(
+    (l: Language) => {
+      updateSettings({ language: l });
+    },
+    [updateSettings]
+  );
 
   // ── Keyboard handler ─────────────────────────────────────────────────────────
 
@@ -1081,11 +1120,19 @@ export function TypingTest() {
             m === "time" ? "words" : m === "words" ? "zen" : "time"
           );
           break;
+        case "i": {
+          e.preventDefault();
+          const langs: Language[] = ["en", "es", "pt"];
+          const idx = langs.indexOf(languageRef.current);
+          const next = langs[(idx + 1) % langs.length] ?? "en";
+          updateSettings({ language: next });
+          break;
+        }
       }
     };
     window.addEventListener("keydown", onShortcut);
     return () => window.removeEventListener("keydown", onShortcut);
-  }, [toggleLong]);
+  }, [toggleLong, updateSettings]);
 
   // ── Click / key to focus ────────────────────────────────────────────────────
 
@@ -1155,6 +1202,8 @@ export function TypingTest() {
         onToggleLong={toggleLong}
         onToggleNumberOnly={toggleNumberOnly}
         onToggleSymbolOnly={toggleSymbolOnly}
+        language={settings.language}
+        onSetLanguage={setLanguage}
       />
 
       {/* ── Counter / timer ── */}
