@@ -7,20 +7,50 @@ export interface CompletedWord {
   typed: string;
 }
 
-export function getCharStatuses(word: string, typed: string): CharStatus[] {
+export function normalizeKey(ch: string): string {
+  return ch
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
+export function charsMatch(
+  a: string,
+  b: string,
+  accentInsensitive = false
+): boolean {
+  if (a === b) return true;
+  if (!accentInsensitive) return false;
+  return normalizeKey(a) === normalizeKey(b);
+}
+
+export function getCharStatuses(
+  word: string,
+  typed: string,
+  accentInsensitive = false
+): CharStatus[] {
   const out: CharStatus[] = [];
   for (let i = 0; i < word.length; i++) {
     if (i >= typed.length) out.push("untyped");
-    else out.push(typed[i] === word[i] ? "correct" : "incorrect");
+    else
+      out.push(
+        charsMatch(typed[i], word[i], accentInsensitive)
+          ? "correct"
+          : "incorrect"
+      );
   }
   for (let i = word.length; i < typed.length; i++) out.push("extra");
   return out;
 }
 
-export function wordHasError(word: string, typed: string): boolean {
+export function wordHasError(
+  word: string,
+  typed: string,
+  accentInsensitive = false
+): boolean {
   if (typed.length !== word.length) return true;
   for (let i = 0; i < word.length; i++) {
-    if (typed[i] !== word[i]) return true;
+    if (!charsMatch(typed[i], word[i], accentInsensitive)) return true;
   }
   return false;
 }
