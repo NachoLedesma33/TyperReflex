@@ -1,3 +1,6 @@
+import { ES_COMMON_WORDS } from "./words-es";
+import { PT_COMMON_WORDS } from "./words-pt";
+
 const COMMON_WORDS = [
   "the",
   "be",
@@ -545,6 +548,14 @@ export const LONG_WORDS = [
   "yourself",
 ];
 
+export type Language = "en" | "es" | "pt";
+
+export const LANGUAGES: { id: Language; name: string }[] = [
+  { id: "en", name: "English" },
+  { id: "es", name: "Español" },
+  { id: "pt", name: "Português" },
+];
+
 const PUNCTUATION = [",", ".", "!", "?", ";", ":"];
 const SYMBOLS = [
   "!",
@@ -582,6 +593,26 @@ function shuffle<T>(array: T[]): T[] {
   return arr;
 }
 
+function uniq<T>(array: T[]): T[] {
+  return [...new Set(array)];
+}
+
+// Spanish/Portuguese long-word pools derive from their common pool so the
+// accent-heavy words stay available in "long" mode too.
+export function getWordPool(language: Language, long: boolean): string[] {
+  if (language === "es") {
+    return long
+      ? uniq(ES_COMMON_WORDS.filter((w) => w.length >= 8))
+      : uniq(ES_COMMON_WORDS);
+  }
+  if (language === "pt") {
+    return long
+      ? uniq(PT_COMMON_WORDS.filter((w) => w.length >= 8))
+      : uniq(PT_COMMON_WORDS);
+  }
+  return long ? LONG_WORDS : COMMON_WORDS;
+}
+
 export interface WordOptions {
   punctuation?: boolean;
   numbers?: boolean;
@@ -589,6 +620,7 @@ export interface WordOptions {
   longWords?: boolean;
   onlyNumbers?: boolean;
   onlySymbols?: boolean;
+  language?: Language;
 }
 
 function randomDigits(): string {
@@ -627,9 +659,10 @@ export function generateWords(
     longWords = false,
     onlyNumbers = false,
     onlySymbols = false,
+    language = "en",
   } = options;
 
-  const pool = shuffle(longWords ? LONG_WORDS : COMMON_WORDS);
+  const pool = shuffle(getWordPool(language, longWords));
   const result: string[] = [];
   let last = "";
 
