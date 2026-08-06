@@ -82,3 +82,39 @@ test("settings survive a reload when changed at runtime", async ({ page }) => {
   );
   expect(fontMono).toContain("IBM Plex Mono");
 });
+
+test("font selector switches the mono font stack and persists", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const initial = await page.evaluate(() =>
+    getComputedStyle(document.documentElement).getPropertyValue("--font-mono")
+  );
+  expect(initial).toContain("JetBrains Mono");
+
+  await page.getByRole("button", { name: "Settings" }).click();
+  const dialog = page.getByRole("dialog");
+  await dialog.getByRole("combobox", { name: "Font" }).click();
+  await page.getByRole("option", { name: "Fira Code" }).click();
+
+  await expect
+    .poll(async () =>
+      page.evaluate(() =>
+        getComputedStyle(document.documentElement).getPropertyValue(
+          "--font-mono"
+        )
+      )
+    )
+    .toContain("Fira Code");
+
+  await page.reload();
+  await expect
+    .poll(async () =>
+      page.evaluate(() =>
+        getComputedStyle(document.documentElement).getPropertyValue(
+          "--font-mono"
+        )
+      )
+    )
+    .toContain("Fira Code");
+});
