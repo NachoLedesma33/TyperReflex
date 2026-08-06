@@ -211,7 +211,7 @@
 
 ### 11.1 Tipografía
 
-- [ ] **Catálogo de fuentes mono self-hosted** (como JetBrains Mono): Fira Code, Roboto Mono, IBM Plex Mono, Space Mono, Courier Prime. Selector en Settings con preview en vivo y persistencia.
+- [x] **Catálogo de fuentes mono self-hosted** (como JetBrains Mono): Fira Code, Roboto Mono, IBM Plex Mono y Space Mono (5 fuentes con JetBrains). Selector en Settings con preview en vivo por fuente + preview box, y persistencia. **Pendiente**: Courier Prime. Fix de test E2E: Radix Select renderiza las opciones en un portal → `page.getByRole("option")` y `expect.poll` para el CSS var tras reload (webkit era flaky por race con el effect de React).
 - [ ] ✍️ **Fuente de UI separada** para títulos/headers (Inter o Space Grotesk), manteniendo mono para tipeo/timer — jerarquía más profesional.
 - [ ] ✍️ **Toggle de ligaduras** + ajuste de peso/espaciado por fuente.
 
@@ -280,7 +280,7 @@
 
 ### Fase 5 – Frontend polish (próxima)
 
-18. [ ] Fuentes adicionales (mono self-hosted) + fuente de UI separada.
+18. [~] Fuentes adicionales (mono self-hosted: Fira Code, Roboto Mono, IBM Plex Mono, Space Mono) + fuente de UI separada pendiente.
 19. [ ] Idiomas (en/es/pt) + normalización de acentos.
 20. [ ] Rediseño de botones (variantes, estados, tooltips).
 21. [ ] Animaciones profesionales (count-up, fades, transiciones).
