@@ -3,6 +3,8 @@ import {
   DEFAULT_SETTINGS,
   applyCssVars,
   deletePreset,
+  FONT_OPTIONS,
+  FONT_STACKS,
   loadSettings,
   savePreset,
 } from "@/lib/settings";
@@ -38,6 +40,21 @@ describe("loadSettings", () => {
     expect(loadSettings().fontFamily).toBe("jetbrains");
   });
 
+  it("preserves a stored non-default font", () => {
+    window.localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ fontFamily: "space" })
+    );
+    expect(loadSettings().fontFamily).toBe("space");
+  });
+
+  it("exposes a font stack for every option", () => {
+    expect(FONT_OPTIONS).toHaveLength(5);
+    for (const f of FONT_OPTIONS) {
+      expect(FONT_STACKS[f.id]).toContain(f.name);
+    }
+  });
+
   it("falls back to defaults on corrupt JSON", () => {
     window.localStorage.setItem(STORAGE_KEY, "{not-json");
     expect(loadSettings()).toEqual(DEFAULT_SETTINGS);
@@ -53,6 +70,13 @@ describe("applyCssVars", () => {
       "JetBrains Mono"
     );
     expect(root.style.getPropertyValue("--typer-word-gap-x")).toBe("0.9rem");
+  });
+
+  it("applies the chosen font stack", () => {
+    applyCssVars({ ...DEFAULT_SETTINGS, fontFamily: "fira" });
+    expect(
+      document.documentElement.style.getPropertyValue("--font-mono")
+    ).toContain("Fira Code");
   });
 
   it("removes the theme class for classic", () => {
