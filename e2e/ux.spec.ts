@@ -127,3 +127,51 @@ test("first-time onboarding hint disappears after the first keystroke", async ({
 
   await expect(hint).not.toBeVisible();
 });
+
+test("focus mode hides the header/toolbar while typing and restores them on pause", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const header = page.locator("header");
+  const toolbar = page.getByRole("button", { name: "punctuation" });
+  await expect(header).toHaveCSS("opacity", "1");
+  await expect(toolbar).toBeVisible();
+
+  const area = page.getByRole("textbox", { name: "Typing area" });
+  await area.click();
+  await page.keyboard.type("a");
+
+  await expect(header).toHaveCSS("opacity", "0");
+  await expect(toolbar).not.toBeVisible();
+
+  // Pausing brings the UI back
+  await page.keyboard.press("Escape");
+  await expect(header).toHaveCSS("opacity", "1");
+  await expect(toolbar).toBeVisible();
+
+  // Resuming hides it again, and resetting restores it
+  await page.keyboard.press("Escape");
+  await expect(header).toHaveCSS("opacity", "0");
+  await page.keyboard.press("Tab");
+  await expect(header).toHaveCSS("opacity", "1");
+});
+
+test("backspace on an empty input returns to the previous word", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const area = page.getByRole("textbox", { name: "Typing area" });
+  await expect(area).toBeVisible();
+
+  await setWordsMode(page, 10);
+  await expect(page.getByText("10 words", { exact: true })).toBeVisible();
+  await area.click();
+  await typeCurrentWord(page);
+  await typeCurrentWord(page);
+  await expect(page.getByText("2/10", { exact: true })).toBeVisible();
+
+  await page.keyboard.press("Backspace");
+
+  await expect(page.getByText("1/10", { exact: true })).toBeVisible();
+  await expect(page.getByLabel("Typing input")).not.toHaveValue("");
+});
