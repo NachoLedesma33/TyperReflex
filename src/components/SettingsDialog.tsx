@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { RotateCcw, Save, Settings2, Trash2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { ToolBtn } from "@/components/ToolBtn";
 import {
   Dialog,
   DialogContent,
@@ -43,9 +43,14 @@ export function SettingsDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" size="icon" aria-label="Settings">
+        <ToolBtn
+          variant="outline"
+          size="icon"
+          title="settings"
+          ariaLabel="Settings"
+        >
           <Settings2 className="size-5" />
-        </Button>
+        </ToolBtn>
       </DialogTrigger>
       <DialogContent className="max-w-sm">
         <DialogHeader>
@@ -287,10 +292,11 @@ export function SettingsDialog() {
                   }
                 }}
               />
-              <Button
+              <ToolBtn
                 variant="outline"
                 size="icon"
-                aria-label="Save preset"
+                title="save preset"
+                ariaLabel="Save preset"
                 disabled={!presetName.trim()}
                 onClick={() => {
                   setPresets(savePreset(presetName, settings));
@@ -298,7 +304,7 @@ export function SettingsDialog() {
                 }}
               >
                 <Save className="size-4" />
-              </Button>
+              </ToolBtn>
             </div>
             {presets.length > 0 && (
               <div className="flex flex-col gap-1 mt-1">
@@ -329,15 +335,16 @@ export function SettingsDialog() {
         </div>
 
         <div className="flex justify-end">
-          <Button
+          <ToolBtn
             variant="ghost"
-            size="sm"
-            className="gap-2 font-mono text-typer-untyped hover:text-primary"
+            size="xs"
+            title="reset settings"
+            className="gap-2 text-typer-untyped hover:text-primary"
             onClick={resetSettings}
           >
-            <RotateCcw className="size-4" />
+            <RotateCcw className="size-3.5" />
             reset
-          </Button>
+          </ToolBtn>
         </div>
       </DialogContent>
     </Dialog>

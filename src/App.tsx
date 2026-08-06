@@ -110,7 +110,7 @@ function App() {
                 {Array.from({ length: 4 }, (_, i) => (
                   <span
                     key={i}
-                    className="size-9 rounded-md border border-border/60"
+                    className="size-9 rounded-full border border-border/60"
                   />
                 ))}
               </div>

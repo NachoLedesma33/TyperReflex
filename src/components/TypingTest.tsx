@@ -38,6 +38,7 @@ import {
 import type { ChartPoint, Results } from "@/components/ResultsScreen";
 import { getPersonalBest, saveResult, type HistoryEntry } from "@/lib/history";
 import { recordKeyHeatmap, recordStats } from "@/lib/stats";
+import { ToolBtn } from "@/components/ToolBtn";
 
 const ResultsScreen = lazy(() =>
   import("@/components/ResultsScreen").then((m) => ({
@@ -232,38 +233,6 @@ const CHAR_CLASS: Record<CharStatus, string> = {
   incorrect: "text-typer-wrong",
   extra: "text-typer-extra",
 };
-
-// ─── Toolbar button ───────────────────────────────────────────────────────────
-
-export function ToolBtn({
-  active,
-  onClick,
-  title,
-  icon: Icon,
-  children,
-}: {
-  active?: boolean;
-  onClick: () => void;
-  title?: string;
-  icon?: React.ElementType;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      title={title}
-      aria-pressed={active}
-      className={cn(
-        "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md font-mono text-xl transition-colors whitespace-nowrap",
-        "hover:bg-accent/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
-        active ? "text-primary" : "text-typer-untyped hover:text-typer-correct"
-      )}
-    >
-      {Icon && <Icon className="size-4.5" aria-hidden="true" />}
-      {children}
-    </button>
-  );
-}
 
 // ─── Toolbar (static subtree, isolated so keystrokes don't re-render it) ─────
 
@@ -1392,29 +1361,31 @@ export function TypingTest() {
               restart? progress will be lost
             </p>
             <div className="flex gap-2">
-              <button
-                type="button"
+              <ToolBtn
+                variant="primary"
+                size="xs"
+                title="restart"
                 onClick={() => {
                   resetTest();
                   setConfirmReset(false);
                   confirmResetRef.current = false;
                   inputRef.current?.focus();
                 }}
-                className="rounded-md border border-border px-4 py-1.5 font-mono text-primary hover:bg-accent/40 transition-colors"
               >
                 restart
-              </button>
-              <button
-                type="button"
+              </ToolBtn>
+              <ToolBtn
+                variant="ghost"
+                size="xs"
+                title="cancel"
                 onClick={() => {
                   setConfirmReset(false);
                   confirmResetRef.current = false;
                   inputRef.current?.focus();
                 }}
-                className="rounded-md border border-border px-4 py-1.5 font-mono text-typer-untyped hover:bg-accent/40 transition-colors"
               >
                 cancel
-              </button>
+              </ToolBtn>
             </div>
           </div>
         )}

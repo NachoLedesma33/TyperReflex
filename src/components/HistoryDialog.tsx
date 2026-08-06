@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { History } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { ToolBtn } from "@/components/ToolBtn";
 import {
   Dialog,
   DialogContent,
@@ -10,7 +10,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
 import { clearHistory, getHistory, type HistoryEntry } from "@/lib/history";
 
 function formatDate(ts: number): string {
@@ -53,12 +52,15 @@ function HistoryList({
           </div>
         </div>
       ))}
-      <button
+      <ToolBtn
+        size="xs"
+        variant="ghost"
+        title="clear history"
+        className="mt-2 w-fit"
         onClick={onClear}
-        className="mt-2 font-mono text-sm text-typer-untyped hover:text-primary transition-colors w-fit"
       >
         clear history
-      </button>
+      </ToolBtn>
     </div>
   );
 }
@@ -87,9 +89,14 @@ export function HistoryDialog() {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="icon" aria-label="History">
+        <ToolBtn
+          variant="outline"
+          size="icon"
+          title="history"
+          ariaLabel="History"
+        >
           <History className="size-5" />
-        </Button>
+        </ToolBtn>
       </DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader>
@@ -98,19 +105,16 @@ export function HistoryDialog() {
         </DialogHeader>
         <div className="flex gap-1 mb-3">
           {FILTERS.map((f) => (
-            <button
+            <ToolBtn
               key={f}
+              size="xs"
+              variant="ghost"
+              active={filter === f}
+              title={`filter: ${f}`}
               onClick={() => setFilter(f)}
-              aria-pressed={filter === f}
-              className={cn(
-                "px-2.5 py-1 rounded font-mono text-xs transition-colors focus-visible:outline-2 focus-visible:outline-primary",
-                filter === f
-                  ? "bg-primary/10 text-primary"
-                  : "text-typer-untyped hover:text-typer-correct"
-              )}
             >
               {f}
-            </button>
+            </ToolBtn>
           ))}
         </div>
         <div className="max-h-[50vh] overflow-y-auto pr-1">

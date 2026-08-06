@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { BarChart3 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { ToolBtn } from "@/components/ToolBtn";
 import {
   Dialog,
   DialogContent,
@@ -62,9 +62,9 @@ export function StatsDialog() {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="icon" aria-label="Stats">
+        <ToolBtn variant="outline" size="icon" title="stats" ariaLabel="Stats">
           <BarChart3 className="size-5" />
-        </Button>
+        </ToolBtn>
       </DialogTrigger>
       <DialogContent className="max-w-lg">
         <DialogHeader>
