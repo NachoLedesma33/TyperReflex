@@ -24,6 +24,7 @@ import { Switch } from "@/components/ui/switch";
 import {
   deletePreset,
   FONT_OPTIONS,
+  FONT_STACKS,
   getPresets,
   PALETTES,
   savePreset,
@@ -71,11 +72,16 @@ export function SettingsDialog() {
               <SelectContent>
                 {FONT_OPTIONS.map((f) => (
                   <SelectItem key={f.id} value={f.id}>
-                    {f.name}
+                    <span style={{ fontFamily: FONT_STACKS[f.id] }}>
+                      {f.name}
+                    </span>
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
+            <div className="rounded-md border border-border/60 bg-card/40 px-3 py-2 text-lg text-typer-untyped font-mono">
+              The quick brown fox — 0123456789
+            </div>
           </div>
 
           <div className="flex flex-col gap-2">

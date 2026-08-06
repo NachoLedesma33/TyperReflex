@@ -112,18 +112,25 @@ export const THEMES: Theme[] = [
   { id: "sand", name: "Sand" },
 ];
 
-export type FontId = "default" | "jetbrains" | "ibmplex";
+export type FontId = "jetbrains" | "fira" | "roboto" | "ibmplex" | "space";
 
-export const FONT_STACKS: Record<Exclude<FontId, "default">, string> = {
-  jetbrains:
-    '"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
-  ibmplex:
-    '"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
+const FONT_FALLBACK =
+  "ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace";
+
+export const FONT_STACKS: Record<FontId, string> = {
+  jetbrains: `"JetBrains Mono", ${FONT_FALLBACK}`,
+  fira: `"Fira Code", ${FONT_FALLBACK}`,
+  roboto: `"Roboto Mono", ${FONT_FALLBACK}`,
+  ibmplex: `"IBM Plex Mono", ${FONT_FALLBACK}`,
+  space: `"Space Mono", ${FONT_FALLBACK}`,
 };
 
 export const FONT_OPTIONS: { id: FontId; name: string }[] = [
   { id: "jetbrains", name: "JetBrains Mono" },
+  { id: "fira", name: "Fira Code" },
+  { id: "roboto", name: "Roboto Mono" },
   { id: "ibmplex", name: "IBM Plex Mono" },
+  { id: "space", name: "Space Mono" },
 ];
 
 export interface Settings {
@@ -161,7 +168,7 @@ export function loadSettings(): Settings {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return DEFAULT_SETTINGS;
     const parsed = JSON.parse(raw) as Partial<Settings>;
-    if (parsed.fontFamily === "default") {
+    if ((parsed.fontFamily as string) === "default") {
       parsed.fontFamily = "jetbrains";
     }
     return { ...DEFAULT_SETTINGS, ...parsed };
@@ -193,11 +200,7 @@ export function applyCssVars(settings: Settings) {
     root.classList.add(`theme-${settings.themeId}`);
   }
 
-  if (settings.fontFamily === "default") {
-    root.style.removeProperty("--font-mono");
-  } else {
-    root.style.setProperty("--font-mono", FONT_STACKS[settings.fontFamily]);
-  }
+  root.style.setProperty("--font-mono", FONT_STACKS[settings.fontFamily]);
 
   const fs = settings.fontSize;
   const minFs = Math.max(0.875, fs - 0.25);
