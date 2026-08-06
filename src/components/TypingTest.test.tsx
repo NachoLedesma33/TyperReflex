@@ -305,4 +305,37 @@ describe("TypingTest", () => {
     await user.keyboard("w");
     expect(document.querySelector(".typer-fix-flash")).not.toBeInTheDocument();
   });
+
+  it("jumps back to the previous word when pressing Backspace on an empty input", async () => {
+    const user = setupUser();
+    renderTypingTest();
+
+    await user.click(screen.getByRole("button", { name: "words" }));
+    await user.click(screen.getByRole("button", { name: "10" }));
+
+    const input = screen.getByLabelText("Typing input");
+    input.focus();
+    await user.keyboard("w0 ");
+    expect(screen.getByText("1/10")).toBeInTheDocument();
+    expect(input).toHaveValue("");
+
+    await user.keyboard("{Backspace}");
+    expect(screen.getByText("0/10")).toBeInTheDocument();
+    expect(input).toHaveValue("w0");
+  });
+
+  it("enables focus mode while running and disables it when idle", async () => {
+    const user = setupUser();
+    renderTypingTest();
+    const input = screen.getByLabelText("Typing input");
+
+    expect(document.body).not.toHaveClass("typer-focus-mode");
+
+    input.focus();
+    await user.keyboard("h");
+    expect(document.body).toHaveClass("typer-focus-mode");
+
+    await user.keyboard("{Tab}");
+    expect(document.body).not.toHaveClass("typer-focus-mode");
+  });
 });
