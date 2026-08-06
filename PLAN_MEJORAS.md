@@ -217,8 +217,8 @@
 
 ### 11.2 Idiomas
 
-- [ ] **Selector de idioma** (toolbar + atajo) con pool de palabras propio: **inglés** (default), **español**, **portugués** (3 por ahora). Persistencia en settings.
-- [ ] ✍️ **Normalización de acentos** (es/pt): distinguir o ignorar tildes/ñ según preferencia.
+- [x] **Selector de idioma** (toolbar en/es/pt con icono Languages + atajo `i` que cicla; también Select en Settings): pool de palabras propio — **inglés** (default, 388), **español** (~240, con tildes) y **portugués** (~240) en `src/lib/words-es.ts`/`words-pt.ts`. Persistencia en settings (`language`, saneada en `loadSettings`). `getWordPool(language, long)` deriva el pool "long" de es/pt filtrando ≥8 chars; `generateWords` recibe `language`. **Pendiente**: Courier Prime de 11.1 sigue abierto.
+- [x] ✍️ **Normalización de acentos** (es/pt): toggle `accentInsensitive` en Settings ("Ignore accents"). `normalizeKey` (NFD + strip diacritics, también ignora ñ/ü) + `charsMatch`; `getCharStatuses`/`wordHasError` aceptan el flag y el input handler lo usa para contar errores y `isCorrect`. Por defecto distingue acentos.
 - [ ] ✍️ **Modo práctica de acentos** para español: palabras con á/é/í/ó/ú/ñ.
 
 ### 11.3 Botones y controles
@@ -281,7 +281,7 @@
 ### Fase 5 – Frontend polish (próxima)
 
 18. [~] Fuentes adicionales (mono self-hosted: Fira Code, Roboto Mono, IBM Plex Mono, Space Mono) + fuente de UI separada pendiente.
-19. [ ] Idiomas (en/es/pt) + normalización de acentos.
+19. [~] Idiomas (en/es/pt + normalización de acentos) — falta modo práctica de acentos.
 20. [ ] Rediseño de botones (variantes, estados, tooltips).
 21. [ ] Animaciones profesionales (count-up, fades, transiciones).
 22. [ ] Custom theme + word accuracy + evolución de WPM en historial.
