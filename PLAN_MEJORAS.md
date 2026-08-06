@@ -223,9 +223,9 @@
 
 ### 11.3 Botones y controles
 
-- [ ] **Rediseño de ToolBtn**: estilo pill, estados hover/pressed/active con glow sutil, transiciones consistentes.
-- [ ] ✍️ **Sistema de variantes** unificado (primary/ghost/outline) reutilizado en header, toolbar y dialogs.
-- [ ] ✍️ **Tooltips con delay** + micro-feedback (scale al presionar) en toggles.
+- [x] **Rediseño de ToolBtn**: nuevo componente compartido `src/components/ToolBtn.tsx` (cva) — pill (`rounded-full`), glow sutil en active (`shadow-[0_0_16px_-6px] shadow-primary/60`), `active:scale-95` como micro-feedback, transición unificada de color/fondo/borde/sombra/transform, focus-visible ring, estados hover/pressed/disabled.
+- [x] ✍️ **Sistema de variantes** unificado (`ghost` default / `primary` / `outline` + sizes `sm`/`xs`/`icon`): reutilizado en toolbar (TypingTest), header (triggers de History/Stats/Settings/theme, antes `ui/Button` outline/icon) y dialogs (filtros + clear history de HistoryDialog, save preset + reset de SettingsDialog, overlay restart/cancel de TypingTest con primary/ghost). El componente es self-contained (Tooltip.Provider interno, delay 500ms). `onClick` opcional para triggers Radix (asChild inyecta el handler).
+- [x] ✍️ **Tooltips con delay** (Radix Tooltip, 500ms + skip 200ms): reemplazan el `title` nativo en toolbar/header/dialogs (ya no hay título duplicado). E2E verifica tooltip en hover, glow en toggle activo, pill en header y filtros de history.
 
 ### 11.4 Animaciones
 
@@ -282,7 +282,7 @@
 
 18. [~] Fuentes adicionales (mono self-hosted: Fira Code, Roboto Mono, IBM Plex Mono, Space Mono) + fuente de UI separada pendiente.
 19. [x] Idiomas (en/es/pt + normalización + modo práctica de acentos).
-20. [ ] Rediseño de botones (variantes, estados, tooltips).
+20. [x] Rediseño de botones (variantes, estados, tooltips).
 21. [ ] Animaciones profesionales (count-up, fades, transiciones).
 22. [ ] Custom theme + word accuracy + evolución de WPM en historial.
 
