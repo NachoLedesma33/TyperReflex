@@ -369,4 +369,47 @@ describe("TypingTest", () => {
     await user.keyboard("{Tab}");
     expect(document.body).not.toHaveClass("typer-focus-mode");
   });
+
+  it("toggles accent practice and forces spanish", async () => {
+    const user = setupUser();
+    renderTypingTest();
+
+    const accents = screen.getByRole("button", { name: "accents" });
+    expect(accents).toHaveAttribute("aria-pressed", "false");
+
+    await user.click(accents);
+    expect(screen.getByRole("button", { name: "es" })).toHaveAttribute(
+      "aria-pressed",
+      "true"
+    );
+    expect(screen.getByRole("button", { name: "accents" })).toHaveAttribute(
+      "aria-pressed",
+      "true"
+    );
+    expect(generateWordsMock).toHaveBeenCalledWith(
+      expect.any(Number),
+      expect.objectContaining({ accentPractice: true })
+    );
+  });
+
+  it("disables accent practice when switching to another language", async () => {
+    const user = setupUser();
+    renderTypingTest();
+
+    await user.click(screen.getByRole("button", { name: "accents" }));
+    expect(screen.getByRole("button", { name: "accents" })).toHaveAttribute(
+      "aria-pressed",
+      "true"
+    );
+
+    await user.click(screen.getByRole("button", { name: "pt" }));
+    expect(screen.getByRole("button", { name: "accents" })).toHaveAttribute(
+      "aria-pressed",
+      "false"
+    );
+    expect(generateWordsMock).toHaveBeenCalledWith(
+      expect.any(Number),
+      expect.objectContaining({ language: "pt", accentPractice: false })
+    );
+  });
 });

@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
+import { ES_ACCENT_PRACTICE_WORDS, ES_COMMON_WORDS } from "@/lib/words-es";
 import {
   generateWords,
+  getAccentPracticePool,
   getWordPool,
   LANGUAGES,
   LONG_WORDS,
@@ -112,5 +114,39 @@ describe("language pools", () => {
   it("spanish pool contains accented words", () => {
     const pool = getWordPool("es", false);
     expect(pool.some((w) => /[áéíóúüñ]/.test(w))).toBe(true);
+  });
+});
+
+describe("accent practice", () => {
+  it("pool has no duplicates", () => {
+    const pool = getAccentPracticePool();
+    expect(new Set(pool).size).toBe(pool.length);
+  });
+
+  it("every pool word carries a diacritic", () => {
+    for (const w of getAccentPracticePool()) {
+      expect(w).toMatch(/[áéíóúüñÁÉÍÓÚÜÑ]/);
+    }
+  });
+
+  it("pool includes the dedicated accent words and accented commons", () => {
+    const pool = new Set(getAccentPracticePool());
+    expect(ES_ACCENT_PRACTICE_WORDS.length).toBeGreaterThan(0);
+    for (const w of ES_ACCENT_PRACTICE_WORDS) {
+      expect(pool.has(w)).toBe(true);
+    }
+    for (const w of ES_COMMON_WORDS.filter((w) => /[áéíóúüñÁÉÍÓÚÜÑ]/.test(w))) {
+      expect(pool.has(w)).toBe(true);
+    }
+  });
+
+  it("generates only accented words in accentPractice mode", () => {
+    const pool = new Set(getAccentPracticePool());
+    const words = generateWords(200, { accentPractice: true });
+    expect(words).toHaveLength(200);
+    for (const w of words) {
+      expect(pool.has(w)).toBe(true);
+      expect(w).toMatch(/[áéíóúüñÁÉÍÓÚÜÑ]/);
+    }
   });
 });
