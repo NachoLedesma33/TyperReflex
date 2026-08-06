@@ -1,6 +1,6 @@
 # TyperReflex – Plan de Mejoras
 
-> Estado: Fases 0–4 completas, **sección 1 completa** (componentes/funcionalidad), **sección 2 completa** (estilos/UI/UX), **sección 4 completa** (tests unit + component + E2E/CI: 70 unit + 36 E2E), **sección 6 completa** (a11y), **sección 7 completa** (UX de flujo/interacción: 78 unit + 51 E2E) y **sección 8 completa** (tooling/calidad: commit convention, npm audit 0 vulns, TS strict sin any, .env.example, README + screenshots, deploy Vercel, CHANGELOG 1.0.0). Últimas tandas: **focus mode**, **backspace vuelve a la palabra anterior**, **header full-width** y **accuracy que cuenta errores corregidos** — 83 unit + 57 E2E ✓. Pendiente: punto 17 (backend/multiplayer, decisión separada) y sección 9 (analytics: meta-benchmark opcional).
+> Estado: Fases 0–4 completas, **sección 1 completa** (componentes/funcionalidad), **sección 2 completa** (estilos/UI/UX), **sección 4 completa** (tests unit + component + E2E/CI: 70 unit + 36 E2E), **sección 6 completa** (a11y), **sección 7 completa** (UX de flujo/interacción: 78 unit + 51 E2E) y **sección 8 completa** (tooling/calidad: commit convention, npm audit 0 vulns, TS strict sin any, .env.example, README + screenshots, deploy Vercel, CHANGELOG 1.0.0). Últimas tandas: **focus mode**, **backspace vuelve a la palabra anterior**, **header full-width** y **accuracy que cuenta errores corregidos** — 83 unit + 57 E2E ✓. **Backend/multiplayer postergado a futuro** (secciones 9-10 y punto 17). Próxima: **sección 11 – mejoras frontend** (fuentes, idiomas, botones, animaciones).
 > Referencias de código: `src/components/TypingTest.tsx`, `src/lib/words.ts`, `src/index.css`, `src/App.tsx`.
 
 ---
@@ -196,12 +196,51 @@
 
 ---
 
-## 10. Backend / Multiplayer (futuro, fuera de scope ahora)
+## 10. Backend / Multiplayer (postergado a futuro)
 
 - [ ] Leaderboards globales (requiere backend).
 - [ ] Races en tiempo real (WebSocket).
 - [ ] Cuentas y sync de config/results (requiere auth).
 - [ ] Generación de texto por API (textos de libros, código).
+
+---
+
+## 11. Frontend – Mejoras propuestas (pendientes)
+
+> Prioridad pedida por el usuario: más fuentes, idiomas (2-3), botones más profesionales y animaciones extra. Las ideas propias van marcadas con ✍️.
+
+### 11.1 Tipografía
+
+- [ ] **Catálogo de fuentes mono self-hosted** (como JetBrains Mono): Fira Code, Roboto Mono, IBM Plex Mono, Space Mono, Courier Prime. Selector en Settings con preview en vivo y persistencia.
+- [ ] ✍️ **Fuente de UI separada** para títulos/headers (Inter o Space Grotesk), manteniendo mono para tipeo/timer — jerarquía más profesional.
+- [ ] ✍️ **Toggle de ligaduras** + ajuste de peso/espaciado por fuente.
+
+### 11.2 Idiomas
+
+- [ ] **Selector de idioma** (toolbar + atajo) con pool de palabras propio: **inglés** (default), **español**, **portugués** (3 por ahora). Persistencia en settings.
+- [ ] ✍️ **Normalización de acentos** (es/pt): distinguir o ignorar tildes/ñ según preferencia.
+- [ ] ✍️ **Modo práctica de acentos** para español: palabras con á/é/í/ó/ú/ñ.
+
+### 11.3 Botones y controles
+
+- [ ] **Rediseño de ToolBtn**: estilo pill, estados hover/pressed/active con glow sutil, transiciones consistentes.
+- [ ] ✍️ **Sistema de variantes** unificado (primary/ghost/outline) reutilizado en header, toolbar y dialogs.
+- [ ] ✍️ **Tooltips con delay** + micro-feedback (scale al presionar) en toggles.
+
+### 11.4 Animaciones
+
+- [ ] **Count-up animado** de WPM/accuracy en resultados.
+- [ ] **Fade-in escalonado** de la pantalla de resultados (stats → charts).
+- [ ] ✍️ **Transición entre estados** (idle→running→finished) y fade de overlays de pausa/reset.
+- [ ] ✍️ **Shimmer/glow** en la barra de progreso y en la palabra activa.
+- [ ] ✍️ Todo respetando `prefers-reduced-motion` (media query ya existente).
+
+### 11.5 Extras (✍️ ideas propias)
+
+- [ ] **Custom theme**: editor de colores (hue/lightness sliders) guardado en settings, sobre las paletas existentes.
+- [ ] **Word accuracy** (palabras correctas vs total) además del accuracy por caracteres.
+- [ ] **Gráfico de evolución de WPM** en el historial (mini line chart con `getHistory`).
+- [ ] **Búsqueda en historial** (fecha/modo/opción) además de los filtros actuales.
 
 ---
 
@@ -237,7 +276,15 @@
 ### Fase 4 – Datos / futuro
 
 16. [x] Stats globales, streaks, heatmap de teclas.
-17. [ ] Backend/multiplayer (decisión separada).
+17. [ ] Backend/multiplayer (postergado a futuro, decisión separada).
+
+### Fase 5 – Frontend polish (próxima)
+
+18. [ ] Fuentes adicionales (mono self-hosted) + fuente de UI separada.
+19. [ ] Idiomas (en/es/pt) + normalización de acentos.
+20. [ ] Rediseño de botones (variantes, estados, tooltips).
+21. [ ] Animaciones profesionales (count-up, fades, transiciones).
+22. [ ] Custom theme + word accuracy + evolución de WPM en historial.
 
 ---
 
