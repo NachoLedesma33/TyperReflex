@@ -305,7 +305,7 @@ const OptionsToolbar = memo(function OptionsToolbar({
   onToggleSymbolOnly,
 }: OptionsToolbarProps) {
   return (
-    <div className="flex flex-col items-center gap-3">
+    <div className="typer-toolbar flex flex-col items-center gap-3">
       <div className="flex flex-wrap items-center justify-center gap-1.5">
         <ToolBtn
           active={punctuation}
@@ -778,6 +778,14 @@ export function TypingTest() {
     }
   }, [gameStatus, mode, timeOption]);
 
+  // Focus mode: hide the toolbar/header/footer while actively typing so the
+  // test is the only thing on screen. Pausing brings the UI back.
+  useEffect(() => {
+    const active = gameStatus === "running" && !isPaused;
+    document.body.classList.toggle("typer-focus-mode", active);
+    return () => document.body.classList.remove("typer-focus-mode");
+  }, [gameStatus, isPaused]);
+
   // ── Input handler ────────────────────────────────────────────────────────────
 
   const dismissOnboarding = useCallback(() => {
@@ -946,6 +954,32 @@ export function TypingTest() {
           setConfirmReset(false);
           confirmResetRef.current = false;
           inputRef.current?.focus();
+        }
+        return;
+      }
+
+      if (k === "backspace") {
+        // Empty current word + at least one completed word → jump back to the
+        // previous word (restoring its typed text) so it can be corrected.
+        if (
+          currentInputRef.current === "" &&
+          currentWordIdxRef.current > 0 &&
+          !isPausedRef.current
+        ) {
+          e.preventDefault();
+          const completed = completedWordsRef.current;
+          const prev = completed[completed.length - 1];
+          if (prev) {
+            const rest = completed.slice(0, -1);
+            completedWordsRef.current = rest;
+            setCompletedWords(rest);
+            currentWordIdxRef.current -= 1;
+            setCurrentWordIdx((i) => i - 1);
+            currentInputRef.current = prev.typed;
+            setCurrentInput(prev.typed);
+            setFixFlashIdx(-1);
+            setStrictReject(false);
+          }
         }
         return;
       }

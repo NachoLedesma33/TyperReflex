@@ -111,7 +111,7 @@ export function SettingsDialog() {
               id="settings-gap"
               aria-label="Word gap"
               min={0.3}
-              max={1.2}
+              max={2.5}
               step={0.05}
               value={[settings.wordGap]}
               onValueChange={([v]) => updateSettings({ wordGap: v })}

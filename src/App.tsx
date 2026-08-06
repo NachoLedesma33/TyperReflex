@@ -98,9 +98,9 @@ function App() {
     <div className="min-h-screen bg-background flex flex-col">
       <Splash visible={splashVisible} />
 
-      {/* Header – aligned with typing zone */}
-      <header className="relative z-10 w-full max-w-4xl mx-auto px-4 py-5 flex items-center justify-between shrink-0">
-        <span className="font-mono text-2xl font-bold text-primary tracking-tight select-none">
+      {/* Header – full-width so title/menu hug their side margins */}
+      <header className="relative z-10 w-full px-6 md:px-10 py-5 flex items-center justify-between gap-4 shrink-0">
+        <span className="font-mono text-2xl sm:text-3xl md:text-4xl font-bold text-primary tracking-tight select-none">
           TyperReflex
         </span>
         <div className="flex items-center gap-2">

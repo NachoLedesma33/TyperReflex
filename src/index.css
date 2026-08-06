@@ -675,6 +675,25 @@
   animation: splashOut 0.35s ease-in both;
 }
 
+/* ── Focus mode: hide surrounding UI while the test is running ── */
+.typer-focus-mode header,
+.typer-focus-mode footer,
+.typer-focus-mode .typer-toolbar {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.25s ease,
+    visibility 0.25s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .typer-focus-mode header,
+  .typer-focus-mode footer,
+  .typer-focus-mode .typer-toolbar {
+    transition: none;
+  }
+}
+
 /* ── Reduced motion (a11y) ── */
 @media (prefers-reduced-motion: reduce) {
   .typer-caret {
