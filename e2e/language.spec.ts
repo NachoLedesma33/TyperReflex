@@ -1,5 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
-import { getWordPool } from "../src/lib/words";
+import { getAccentPracticePool, getWordPool } from "../src/lib/words";
 
 function currentWordInPool(page: Page, pool: Set<string>) {
   return expect
@@ -46,4 +46,34 @@ test("language cycles with the i shortcut while idle", async ({ page }) => {
   });
   await page.keyboard.press("i");
   await currentWordInPool(page, esPool);
+});
+
+test("accent practice forces spanish accented words", async ({ page }) => {
+  await page.goto("/");
+  const accentPool = new Set(getAccentPracticePool());
+
+  await page.getByRole("button", { name: "accents" }).click();
+  await currentWordInPool(page, accentPool);
+
+  await expect(
+    page.getByRole("button", { name: "es", exact: true })
+  ).toHaveAttribute("aria-pressed", "true");
+});
+
+test("switching language turns accent practice off", async ({ page }) => {
+  await page.goto("/");
+  const ptPool = new Set(getWordPool("pt", false));
+
+  await page.getByRole("button", { name: "accents" }).click();
+  await expect(page.getByRole("button", { name: "accents" })).toHaveAttribute(
+    "aria-pressed",
+    "true"
+  );
+
+  await page.getByRole("button", { name: "pt", exact: true }).click();
+  await expect(page.getByRole("button", { name: "accents" })).toHaveAttribute(
+    "aria-pressed",
+    "false"
+  );
+  await currentWordInPool(page, ptPool);
 });
