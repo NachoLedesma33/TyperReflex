@@ -1,6 +1,6 @@
 # TyperReflex – Plan de Mejoras
 
-> Estado: Fases 0–4 completas, **sección 1 completa** (componentes/funcionalidad), **sección 2 completa** (estilos/UI/UX), **sección 4 completa** (tests unit + component + E2E/CI: 70 unit + 36 E2E), **sección 6 completa** (a11y), **sección 7 completa** (UX de flujo/interacción: 78 unit + 51 E2E) y **sección 8 completa** (tooling/calidad: commit convention, npm audit 0 vulns, TS strict sin any, .env.example, README + screenshots, deploy Vercel, CHANGELOG 1.0.0). Pendiente: punto 17 (backend/multiplayer, decisión separada) y sección 9 (analytics: meta-benchmark opcional).
+> Estado: Fases 0–4 completas, **sección 1 completa** (componentes/funcionalidad), **sección 2 completa** (estilos/UI/UX), **sección 4 completa** (tests unit + component + E2E/CI: 70 unit + 36 E2E), **sección 6 completa** (a11y), **sección 7 completa** (UX de flujo/interacción: 78 unit + 51 E2E) y **sección 8 completa** (tooling/calidad: commit convention, npm audit 0 vulns, TS strict sin any, .env.example, README + screenshots, deploy Vercel, CHANGELOG 1.0.0). Última tanda: **focus mode**, **backspace vuelve a la palabra anterior** y **header full-width** — 80 unit + 57 E2E ✓. Pendiente: punto 17 (backend/multiplayer, decisión separada) y sección 9 (analytics: meta-benchmark opcional).
 > Referencias de código: `src/components/TypingTest.tsx`, `src/lib/words.ts`, `src/index.css`, `src/App.tsx`.
 
 ---
@@ -70,6 +70,10 @@
 - [x] **Dark mode para la página completa** incluyendo scrollbars (`::-webkit-scrollbar` + `scrollbar-width`/`scrollbar-color`).
 - [x] **Iconografía** coherente en toolbar (lucide-react): Quote/Hash/CaseUpper/Ruler/Binary/Percent + Timer/Rows3/Zap.
 - [x] **Layout** más cercano a monkeytype: header/footer alineados al ancho de la zona de tipeo (`max-w-4xl mx-auto`).
+- [x] **Header full-width**: sin `max-w-4xl mx-auto`, `px-6 md:px-10` — título pegado al margen izquierdo, icons al derecho; título responsive `text-2xl sm:text-3xl md:text-4xl`.
+- [x] **Focus mode**: al empezar a escribir (running y no pausado) el header/footer/toolbar desaparecen (`opacity:0` + `visibility:hidden` + `pointer-events:none`, transición 0.25s, respeta `prefers-reduced-motion`); pausar, terminar o reiniciar los restaura. Clase `.typer-focus-mode` en `<body>`, toolbars marcadas con `.typer-toolbar`.
+- [x] **Backspace vuelve a la palabra anterior**: con input vacío y ≥1 palabra completada, `Backspace` restaura el typed de la palabra previa, la saca de `completedWords` y decrementa el índice (no aplica en pausa ni en confirmación de reset).
+- [x] **Slider de gap entre palabras**: rango extendido (max 2.5 rem) en el panel de settings.
 
 ---
 
