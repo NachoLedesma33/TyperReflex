@@ -30,12 +30,13 @@ vi.mock("@/components/ResultsScreen", () => ({
     results,
     onRestart,
   }: {
-    results: { wpm: number };
+    results: { wpm: number; accuracy: number };
     onRestart: () => void;
   }) => (
     <div>
       <p>results screen</p>
       <p>wpm {results.wpm}</p>
+      <p>acc {results.accuracy}%</p>
       <button onClick={onRestart}>restart</button>
     </div>
   ),
@@ -322,6 +323,31 @@ describe("TypingTest", () => {
     await user.keyboard("{Backspace}");
     expect(screen.getByText("0/10")).toBeInTheDocument();
     expect(input).toHaveValue("w0");
+  });
+
+  it("counts a corrected error toward accuracy after going back to fix it", async () => {
+    const user = setupUser();
+    renderTypingTest();
+
+    await user.click(screen.getByRole("button", { name: "words" }));
+    await user.click(screen.getByRole("button", { name: "10" }));
+
+    const input = screen.getByLabelText("Typing input");
+    input.focus();
+    // Complete w0 with a wrong char, then jump back and fix it.
+    await user.keyboard("wX ");
+    expect(input).toHaveValue("");
+
+    await user.keyboard("{Backspace}");
+    expect(input).toHaveValue("wX");
+
+    await user.keyboard("{Backspace}0 ");
+    expect(screen.getByText("1/10")).toBeInTheDocument();
+
+    // Correcting must not wash away the mistake from the final score:
+    // 2 correct chars against 1 mistake → 67%.
+    await user.click(screen.getByRole("button", { name: "finish" }));
+    expect(await screen.findByText("acc 67%")).toBeInTheDocument();
   });
 
   it("enables focus mode while running and disables it when idle", async () => {

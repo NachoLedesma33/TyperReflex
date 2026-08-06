@@ -96,6 +96,22 @@ describe("calcResults", () => {
     expect(res.accuracy).toBe(100);
     expect(res.wpm).toBe(0);
   });
+
+  it("counts corrected mistakes toward accuracy when a counter is provided", () => {
+    // The word was corrected to its final state, but 2 keystrokes were
+    // mistyped along the way and must still count.
+    const res = calcResults([{ word: "hello", typed: "hello" }], 30, 2);
+    expect(res.correctChars).toBe(5);
+    expect(res.incorrectChars).toBe(0);
+    expect(res.accuracy).toBe(Math.round((5 / 7) * 100));
+  });
+
+  it("falls back to final-state errors when no counter is provided", () => {
+    const res = calcResults([{ word: "cat", typed: "car" }], 30);
+    expect(res.correctChars).toBe(2);
+    expect(res.incorrectChars).toBe(1);
+    expect(res.accuracy).toBe(67); // 2 correct of 3 attempted
+  });
 });
 
 describe("computeLiveWpm", () => {
