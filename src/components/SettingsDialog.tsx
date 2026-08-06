@@ -26,10 +26,12 @@ import {
   FONT_OPTIONS,
   FONT_STACKS,
   getPresets,
+  LANGUAGES,
   PALETTES,
   savePreset,
   THEMES,
   useSettings,
+  type Language,
   type SettingsPreset,
 } from "@/lib/settings";
 
@@ -132,6 +134,38 @@ export function SettingsDialog() {
               id="settings-sound"
               checked={settings.soundEnabled}
               onCheckedChange={(v) => updateSettings({ soundEnabled: v })}
+            />
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="settings-language" className="font-mono">
+              Language
+            </Label>
+            <Select
+              value={settings.language}
+              onValueChange={(v) => updateSettings({ language: v as Language })}
+            >
+              <SelectTrigger id="settings-language">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {LANGUAGES.map((l) => (
+                  <SelectItem key={l.id} value={l.id}>
+                    {l.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <Label htmlFor="settings-accent-insensitive" className="font-mono">
+              Ignore accents
+            </Label>
+            <Switch
+              id="settings-accent-insensitive"
+              checked={settings.accentInsensitive}
+              onCheckedChange={(v) => updateSettings({ accentInsensitive: v })}
             />
           </div>
 

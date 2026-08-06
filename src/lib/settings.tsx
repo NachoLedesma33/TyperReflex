@@ -1,5 +1,9 @@
 /* eslint-disable react-refresh/only-export-components */
 import * as React from "react";
+import { LANGUAGES, type Language } from "@/lib/words";
+
+export { LANGUAGES };
+export type { Language } from "@/lib/words";
 
 export type PaletteId =
   "crimson" | "ocean" | "forest" | "violet" | "amber" | "matrix" | "gruvbox";
@@ -144,6 +148,8 @@ export interface Settings {
   shakeEnabled: boolean;
   confirmRestart: boolean;
   strictMode: boolean;
+  language: Language;
+  accentInsensitive: boolean;
 }
 
 const STORAGE_KEY = "typerreflex-settings";
@@ -160,6 +166,8 @@ export const DEFAULT_SETTINGS: Settings = {
   shakeEnabled: false,
   confirmRestart: false,
   strictMode: false,
+  language: "en",
+  accentInsensitive: false,
 };
 
 export function loadSettings(): Settings {
@@ -171,7 +179,10 @@ export function loadSettings(): Settings {
     if ((parsed.fontFamily as string) === "default") {
       parsed.fontFamily = "jetbrains";
     }
-    return { ...DEFAULT_SETTINGS, ...parsed };
+    const lang = parsed.language;
+    const language: Language =
+      lang !== undefined && LANGUAGES.some((l) => l.id === lang) ? lang : "en";
+    return { ...DEFAULT_SETTINGS, ...parsed, language };
   } catch {
     return DEFAULT_SETTINGS;
   }
