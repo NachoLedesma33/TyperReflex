@@ -23,6 +23,7 @@ import {
   type CompletedWord,
 } from "@/lib/typing";
 import {
+  Asterisk,
   Binary,
   CaseUpper,
   Hash,
@@ -276,6 +277,7 @@ type OptionsToolbarProps = {
   longWords: boolean;
   onlyNumbers: boolean;
   onlySymbols: boolean;
+  accentPractice: boolean;
   language: Language;
   setMode: React.Dispatch<React.SetStateAction<Mode>>;
   setTimeOption: React.Dispatch<React.SetStateAction<number>>;
@@ -286,6 +288,7 @@ type OptionsToolbarProps = {
   onToggleLong: () => void;
   onToggleNumberOnly: () => void;
   onToggleSymbolOnly: () => void;
+  onToggleAccent: () => void;
   onSetLanguage: (language: Language) => void;
 };
 
@@ -299,6 +302,7 @@ const OptionsToolbar = memo(function OptionsToolbar({
   longWords,
   onlyNumbers,
   onlySymbols,
+  accentPractice,
   language,
   setMode,
   setTimeOption,
@@ -309,6 +313,7 @@ const OptionsToolbar = memo(function OptionsToolbar({
   onToggleLong,
   onToggleNumberOnly,
   onToggleSymbolOnly,
+  onToggleAccent,
   onSetLanguage,
 }: OptionsToolbarProps) {
   return (
@@ -361,6 +366,14 @@ const OptionsToolbar = memo(function OptionsToolbar({
           onClick={onToggleSymbolOnly}
         >
           symbol
+        </ToolBtn>
+        <ToolBtn
+          active={accentPractice}
+          title="accent practice (español)"
+          icon={Asterisk}
+          onClick={onToggleAccent}
+        >
+          accents
         </ToolBtn>
       </div>
 
@@ -445,6 +458,7 @@ export function TypingTest() {
   const [longWords, setLongWords] = useState(false);
   const [onlyNumbers, setOnlyNumbers] = useState(false);
   const [onlySymbols, setOnlySymbols] = useState(false);
+  const [accentPractice, setAccentPractice] = useState(false);
 
   // Game state
   const [words, setWords] = useState<string[]>([]);
@@ -517,6 +531,7 @@ export function TypingTest() {
   const longWordsRef = useRef(false);
   const onlyNumbersRef = useRef(false);
   const onlySymbolsRef = useRef(false);
+  const accentPracticeRef = useRef(false);
   const languageRef = useRef<Language>("en");
   const accentInsensitiveRef = useRef(false);
   const errorPairsRef = useRef<Record<string, number>>({});
@@ -545,6 +560,7 @@ export function TypingTest() {
     longWordsRef.current = longWords;
     onlyNumbersRef.current = onlyNumbers;
     onlySymbolsRef.current = onlySymbols;
+    accentPracticeRef.current = accentPractice;
     languageRef.current = settings.language;
     accentInsensitiveRef.current = settings.accentInsensitive;
     strictModeRef.current = settings.strictMode;
@@ -570,6 +586,7 @@ export function TypingTest() {
     longWords,
     onlyNumbers,
     onlySymbols,
+    accentPractice,
     isPaused,
     confirmReset,
   ]);
@@ -704,6 +721,7 @@ export function TypingTest() {
       longWords: longWordsRef.current,
       onlyNumbers: onlyNumbersRef.current,
       onlySymbols: onlySymbolsRef.current,
+      accentPractice: accentPracticeRef.current,
       language: languageRef.current,
     });
 
@@ -764,6 +782,7 @@ export function TypingTest() {
     longWords,
     onlyNumbers,
     onlySymbols,
+    accentPractice,
     settings.language,
   ]);
   /* eslint-enable react-hooks/exhaustive-deps */
@@ -954,6 +973,7 @@ export function TypingTest() {
             longWords: longWordsRef.current,
             onlyNumbers: onlyNumbersRef.current,
             onlySymbols: onlySymbolsRef.current,
+            accentPractice: accentPracticeRef.current,
             language: languageRef.current,
           });
           wordsStateRef.current = [...wordsStateRef.current, ...more];
@@ -994,9 +1014,21 @@ export function TypingTest() {
   const setLanguage = useCallback(
     (l: Language) => {
       updateSettings({ language: l });
+      if (l !== "es") {
+        setAccentPractice(false);
+        accentPracticeRef.current = false;
+      }
     },
     [updateSettings]
   );
+
+  const toggleAccentPractice = useCallback(() => {
+    setAccentPractice((v) => !v);
+    setLongWords(false);
+    setOnlyNumbers(false);
+    setOnlySymbols(false);
+    setLanguage("es");
+  }, [setLanguage]);
 
   // ── Keyboard handler ─────────────────────────────────────────────────────────
 
@@ -1125,14 +1157,14 @@ export function TypingTest() {
           const langs: Language[] = ["en", "es", "pt"];
           const idx = langs.indexOf(languageRef.current);
           const next = langs[(idx + 1) % langs.length] ?? "en";
-          updateSettings({ language: next });
+          setLanguage(next);
           break;
         }
       }
     };
     window.addEventListener("keydown", onShortcut);
     return () => window.removeEventListener("keydown", onShortcut);
-  }, [toggleLong, updateSettings]);
+  }, [toggleLong, setLanguage]);
 
   // ── Click / key to focus ────────────────────────────────────────────────────
 
@@ -1202,6 +1234,8 @@ export function TypingTest() {
         onToggleLong={toggleLong}
         onToggleNumberOnly={toggleNumberOnly}
         onToggleSymbolOnly={toggleSymbolOnly}
+        accentPractice={accentPractice}
+        onToggleAccent={toggleAccentPractice}
         language={settings.language}
         onSetLanguage={setLanguage}
       />

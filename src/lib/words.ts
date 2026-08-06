@@ -1,4 +1,4 @@
-import { ES_COMMON_WORDS } from "./words-es";
+import { ES_ACCENT_PRACTICE_WORDS, ES_COMMON_WORDS } from "./words-es";
 import { PT_COMMON_WORDS } from "./words-pt";
 
 const COMMON_WORDS = [
@@ -613,6 +613,16 @@ export function getWordPool(language: Language, long: boolean): string[] {
   return long ? LONG_WORDS : COMMON_WORDS;
 }
 
+const ACCENT_REGEX = /[áéíóúüñÁÉÍÓÚÜÑ]/;
+
+// Words that carry at least one diacritic, used by the accent-practice mode.
+export function getAccentPracticePool(): string[] {
+  return uniq([
+    ...ES_ACCENT_PRACTICE_WORDS,
+    ...ES_COMMON_WORDS.filter((w) => ACCENT_REGEX.test(w)),
+  ]);
+}
+
 export interface WordOptions {
   punctuation?: boolean;
   numbers?: boolean;
@@ -620,6 +630,7 @@ export interface WordOptions {
   longWords?: boolean;
   onlyNumbers?: boolean;
   onlySymbols?: boolean;
+  accentPractice?: boolean;
   language?: Language;
 }
 
@@ -659,10 +670,13 @@ export function generateWords(
     longWords = false,
     onlyNumbers = false,
     onlySymbols = false,
+    accentPractice = false,
     language = "en",
   } = options;
 
-  const pool = shuffle(getWordPool(language, longWords));
+  const pool = accentPractice
+    ? shuffle(getAccentPracticePool())
+    : shuffle(getWordPool(language, longWords));
   const result: string[] = [];
   let last = "";
 
