@@ -27,7 +27,8 @@ export function wordHasError(word: string, typed: string): boolean {
 
 export function calcResults(
   completed: CompletedWord[],
-  elapsedSecs: number
+  elapsedSecs: number,
+  mistakes?: number
 ): Results {
   let correctChars = 0;
   let incorrectChars = 0;
@@ -51,7 +52,13 @@ export function calcResults(
   const minutes = Math.max(elapsedSecs / 60, 0.001);
   const wpm = Math.round(correctChars / 5 / minutes);
   const rawWpm = Math.round(totalTyped / 5 / minutes);
-  const totalAttempted = correctChars + incorrectChars;
+  // `mistakes` is a keystroke-level counter, so errors that were later
+  // corrected still count against accuracy. Falls back to the final-state
+  // incorrect chars when no counter is provided.
+  const totalAttempted =
+    mistakes !== undefined
+      ? correctChars + mistakes
+      : correctChars + incorrectChars;
   const accuracy =
     totalAttempted > 0
       ? Math.round((correctChars / totalAttempted) * 100)

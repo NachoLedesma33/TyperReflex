@@ -498,6 +498,8 @@ export function TypingTest() {
   const onlySymbolsRef = useRef(false);
   const errorPairsRef = useRef<Record<string, number>>({});
   const keyHeatmapRef = useRef<Record<string, number>>({});
+  const mistakesRef = useRef(0);
+  const missedCountedRef = useRef<number[]>([]);
   const isPausedRef = useRef(false);
   const confirmResetRef = useRef(false);
   const strictModeRef = useRef(settings.strictMode);
@@ -559,7 +561,7 @@ export function TypingTest() {
       }
       const elapsed = (performance.now() - startTimeRef.current) / 1000;
       const completed = finalCompleted ?? completedWordsRef.current;
-      const res = calcResults(completed, elapsed);
+      const res = calcResults(completed, elapsed, mistakesRef.current);
       recordWpm(elapsed, true);
 
       const mode = modeRef.current;
@@ -702,6 +704,8 @@ export function TypingTest() {
     keyHeatmapRef.current = {};
     setErrorPairs({});
     errorPairsRef.current = {};
+    mistakesRef.current = 0;
+    missedCountedRef.current = [];
     setIsPaused(false);
     isPausedRef.current = false;
     setConfirmReset(false);
@@ -820,16 +824,23 @@ export function TypingTest() {
         startTimers();
       }
 
-      // Capture mistyped keys for the heatmap
+      // Capture mistyped keys for the heatmap and count every wrong keystroke
+      // toward accuracy, so errors that are later corrected still count.
       {
         const word = wordsStateRef.current[currentWordIdxRef.current] ?? "";
         for (let i = prevValue.length; i < value.length; i++) {
           if (value[i] === " ") continue;
-          const expected = word[i]?.toLowerCase();
-          if (expected && value[i] !== word[i]) {
-            keyHeatmapRef.current[expected] =
-              (keyHeatmapRef.current[expected] ?? 0) + 1;
-            const pair = `${expected}->${value[i].toLowerCase() ?? ""}`;
+          const expected = word[i];
+          if (expected === undefined) {
+            mistakesRef.current += 1;
+            continue;
+          }
+          if (value[i] !== expected) {
+            mistakesRef.current += 1;
+            const lower = expected.toLowerCase();
+            keyHeatmapRef.current[lower] =
+              (keyHeatmapRef.current[lower] ?? 0) + 1;
+            const pair = `${lower}->${value[i].toLowerCase() ?? ""}`;
             errorPairsRef.current[pair] =
               (errorPairsRef.current[pair] ?? 0) + 1;
           }
@@ -865,8 +876,15 @@ export function TypingTest() {
           return;
         }
 
-        // Missed chars (word finished early with space)
-        for (let i = typed.length; i < word.length; i++) {
+        // Missed chars (word finished early with space). Count each missed
+        // position only once per word, so going back and re-completing the
+        // same word does not inflate the mistake count.
+        const missedIdx = currentWordIdxRef.current;
+        const prevMissed = missedCountedRef.current[missedIdx] ?? 0;
+        const missedNow = Math.max(0, word.length - typed.length);
+        mistakesRef.current += Math.max(0, missedNow - prevMissed);
+        missedCountedRef.current[missedIdx] = Math.max(prevMissed, missedNow);
+        for (let i = typed.length; i < word.length - prevMissed; i++) {
           const expected = word[i]?.toLowerCase();
           if (expected) {
             keyHeatmapRef.current[expected] =
