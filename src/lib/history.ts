@@ -77,3 +77,32 @@ export function clearHistory(): void {
     // ignore storage errors
   }
 }
+
+export type HistoryFilter = "all" | "time" | "words" | "zen";
+
+export function matchesHistorySearch(
+  entry: HistoryEntry,
+  query: string
+): boolean {
+  const q = query.trim().toLowerCase();
+  if (!q) return true;
+  return (
+    entry.mode.includes(q) ||
+    String(entry.option).includes(q) ||
+    String(entry.wpm).includes(q) ||
+    String(entry.accuracy).includes(q) ||
+    String(entry.rawWpm).includes(q) ||
+    new Date(entry.date).toLocaleString().toLowerCase().includes(q)
+  );
+}
+
+export function filterHistory(
+  entries: HistoryEntry[],
+  filter: HistoryFilter,
+  query: string
+): HistoryEntry[] {
+  return entries.filter(
+    (e) =>
+      (filter === "all" || e.mode === filter) && matchesHistorySearch(e, query)
+  );
+}

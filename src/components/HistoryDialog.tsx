@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { History } from "lucide-react";
 
 import { ToolBtn } from "@/components/ToolBtn";
@@ -10,10 +10,65 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { clearHistory, getHistory, type HistoryEntry } from "@/lib/history";
+import { Input } from "@/components/ui/input";
+import {
+  clearHistory,
+  filterHistory,
+  getHistory,
+  type HistoryEntry,
+  type HistoryFilter,
+} from "@/lib/history";
 
 function formatDate(ts: number): string {
   return new Date(ts).toLocaleString();
+}
+
+const TREND_W = 360;
+const TREND_H = 64;
+
+function WpmTrend({ entries }: { entries: HistoryEntry[] }) {
+  const points = useMemo(
+    () => [...entries].sort((a, b) => a.date - b.date),
+    [entries]
+  );
+
+  if (points.length < 2) {
+    return (
+      <p className="font-mono text-xs text-typer-untyped py-4 text-center">
+        not enough data to plot
+      </p>
+    );
+  }
+
+  const max = Math.max(...points.map((p) => p.wpm));
+  const min = Math.min(...points.map((p) => p.wpm));
+  const range = Math.max(max - min, 1);
+  const x = (i: number) =>
+    points.length === 1 ? 0 : (i / (points.length - 1)) * TREND_W;
+  const y = (wpm: number) =>
+    TREND_H - 6 - ((wpm - min) / range) * (TREND_H - 12);
+  const line = points
+    .map((p, i) => `${x(i).toFixed(1)},${y(p.wpm).toFixed(1)}`)
+    .join(" ");
+  const area = `0,${TREND_H} ${line} ${TREND_W},${TREND_H}`;
+
+  return (
+    <svg
+      viewBox={`0 0 ${TREND_W} ${TREND_H}`}
+      className="h-16 w-full"
+      aria-hidden="true"
+    >
+      <polygon points={area} fill="var(--primary)" fillOpacity="0.12" />
+      <polyline
+        points={line}
+        fill="none"
+        stroke="var(--primary)"
+        strokeWidth="2"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
 }
 
 function HistoryList({
@@ -65,17 +120,20 @@ function HistoryList({
   );
 }
 
-const FILTERS = ["all", "time", "words", "zen"] as const;
-type Filter = (typeof FILTERS)[number];
+const FILTERS: HistoryFilter[] = ["all", "time", "words", "zen"];
 
 export function HistoryDialog() {
   const [entries, setEntries] = useState<HistoryEntry[]>([]);
   const [open, setOpen] = useState(false);
-  const [filter, setFilter] = useState<Filter>("all");
+  const [filter, setFilter] = useState<HistoryFilter>("all");
+  const [query, setQuery] = useState("");
 
   const handleOpenChange = (next: boolean) => {
     setOpen(next);
-    if (next) setEntries(getHistory());
+    if (next) {
+      setEntries(getHistory());
+      setQuery("");
+    }
   };
 
   const handleClear = () => {
@@ -83,8 +141,10 @@ export function HistoryDialog() {
     setEntries([]);
   };
 
-  const filtered =
-    filter === "all" ? entries : entries.filter((e) => e.mode === filter);
+  const filtered = useMemo(
+    () => filterHistory(entries, filter, query),
+    [entries, filter, query]
+  );
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -117,6 +177,21 @@ export function HistoryDialog() {
             </ToolBtn>
           ))}
         </div>
+        <div className="mb-3">
+          <Input
+            aria-label="Search history"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="search…"
+            className="font-mono text-sm"
+          />
+        </div>
+        {filtered.length >= 1 && (
+          <div className="flex flex-col gap-2 mb-4">
+            <p className="font-mono text-xs text-typer-untyped">wpm trend</p>
+            <WpmTrend entries={filtered} />
+          </div>
+        )}
         <div className="max-h-[50vh] overflow-y-auto pr-1">
           <HistoryList entries={filtered} onClear={handleClear} />
         </div>
