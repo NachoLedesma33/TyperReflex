@@ -141,3 +141,29 @@ export function recordKeyHeatmap(heatmap: Record<string, number>): void {
     // ignore storage errors
   }
 }
+
+// ─── Meta-benchmark (offline, against your own runs) ─────────────────────────
+
+export function wpmPercentile(entries: HistoryEntry[], wpm: number): number {
+  if (entries.length === 0) return 0;
+  const beaten = entries.filter((e) => e.wpm <= wpm).length;
+  return Math.round((beaten / entries.length) * 100);
+}
+
+export function wpmDistribution(
+  entries: HistoryEntry[],
+  bucketSize = 10
+): { min: number; count: number }[] {
+  if (entries.length === 0) return [];
+  const max = Math.max(...entries.map((e) => e.wpm));
+  const buckets = Math.max(1, Math.ceil((max + 1) / bucketSize));
+  const out = Array.from({ length: buckets }, (_, i) => ({
+    min: i * bucketSize,
+    count: 0,
+  }));
+  for (const e of entries) {
+    const idx = Math.min(buckets - 1, Math.floor(e.wpm / bucketSize));
+    out[idx].count += 1;
+  }
+  return out;
+}

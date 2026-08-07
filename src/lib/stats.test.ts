@@ -6,6 +6,8 @@ import {
   getStats,
   recordKeyHeatmap,
   recordStats,
+  wpmDistribution,
+  wpmPercentile,
 } from "@/lib/stats";
 import type { HistoryEntry } from "@/lib/history";
 
@@ -87,5 +89,71 @@ describe("stats", () => {
     expect(window.localStorage.getItem("typerreflex-key-heatmap")).toContain(
       '"a":2'
     );
+  });
+});
+
+describe("wpmPercentile", () => {
+  const entries = [
+    makeEntry({ wpm: 40 }),
+    makeEntry({ wpm: 60 }),
+    makeEntry({ wpm: 80 }),
+    makeEntry({ wpm: 100 }),
+  ];
+
+  it("is 0 with no entries", () => {
+    expect(wpmPercentile([], 70)).toBe(0);
+  });
+
+  it("counts entries at or below the given wpm", () => {
+    expect(wpmPercentile(entries, 60)).toBe(50); // 40, 60
+    expect(wpmPercentile(entries, 79)).toBe(50); // 40, 60
+    expect(wpmPercentile(entries, 80)).toBe(75); // 40, 60, 80
+    expect(wpmPercentile(entries, 100)).toBe(100); // all
+    expect(wpmPercentile(entries, 120)).toBe(100);
+  });
+
+  it("is 100 when every run ties", () => {
+    const same = [makeEntry({ wpm: 50 }), makeEntry({ wpm: 50 })];
+    expect(wpmPercentile(same, 50)).toBe(100);
+  });
+});
+
+describe("wpmDistribution", () => {
+  it("is empty with no entries", () => {
+    expect(wpmDistribution([])).toEqual([]);
+  });
+
+  it("buckets wpms in tens of wpm", () => {
+    const dist = wpmDistribution([
+      makeEntry({ wpm: 5 }),
+      makeEntry({ wpm: 12 }),
+      makeEntry({ wpm: 28 }),
+      makeEntry({ wpm: 33 }),
+    ]);
+    expect(dist).toEqual([
+      { min: 0, count: 1 },
+      { min: 10, count: 1 },
+      { min: 20, count: 1 },
+      { min: 30, count: 1 },
+    ]);
+  });
+
+  it("caps an exact multiple of the bucket size in the top bucket", () => {
+    const dist = wpmDistribution([makeEntry({ wpm: 100 })]);
+    expect(dist).toHaveLength(11);
+    expect(dist[dist.length - 1]).toEqual({ min: 100, count: 1 });
+  });
+
+  it("keeps a sparse top bucket when max is well below a full bucket", () => {
+    const dist = wpmDistribution([makeEntry({ wpm: 45 })]);
+    expect(dist[dist.length - 1]).toEqual({ min: 40, count: 1 });
+  });
+
+  it("supports a custom bucket size", () => {
+    const dist = wpmDistribution([makeEntry({ wpm: 50 })], 50);
+    expect(dist).toEqual([
+      { min: 0, count: 0 },
+      { min: 50, count: 1 },
+    ]);
   });
 });
