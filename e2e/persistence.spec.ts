@@ -25,6 +25,27 @@ test("theme toggles with the d key and persists after reload", async ({
   ).toBe("dark");
 });
 
+test("theme dropdown switches light/dark and persists after reload", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await expect(page.locator("html")).toHaveClass(/light/);
+
+  await page.getByRole("button", { name: "Toggle theme" }).click();
+  await page.getByRole("menuitem", { name: "Dark" }).click();
+  await expect(page.locator("html")).toHaveClass(/dark/);
+  expect(
+    await page.evaluate(() => localStorage.getItem("typerreflex-theme"))
+  ).toBe("dark");
+
+  await page.reload();
+  await expect(page.locator("html")).toHaveClass(/dark/);
+
+  await page.getByRole("button", { name: "Toggle theme" }).click();
+  await page.getByRole("menuitem", { name: "Light" }).click();
+  await expect(page.locator("html")).toHaveClass(/light/);
+});
+
 test("stored settings are applied on load", async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem(
