@@ -1,6 +1,6 @@
 # TyperReflex – Plan de Mejoras
 
-> Estado: Fases 0–4 completas, **sección 1 completa** (componentes/funcionalidad), **sección 2 completa** (estilos/UI/UX), **sección 4 completa** (tests unit + component + E2E/CI: 70 unit + 36 E2E), **sección 6 completa** (a11y), **sección 7 completa** (UX de flujo/interacción: 78 unit + 51 E2E) y **sección 8 completa** (tooling/calidad: commit convention, npm audit 0 vulns, TS strict sin any, .env.example, README + screenshots, deploy Vercel, CHANGELOG 1.0.0). **Sección 11 completa hasta 11.4** (frontend polish: fuentes, idiomas, botones, animaciones — 114 unit + 96 E2E ✓). **Backend/multiplayer postergado a futuro** (secciones 9-10 y punto 17). Próxima: **11.5 – extras** (custom theme, word accuracy, evolución de WPM en historial, búsqueda).
+> Estado: Fases 0–4 completas, **sección 1 completa** (componentes/funcionalidad), **sección 2 completa** (estilos/UI/UX), **sección 4 completa** (tests unit + component + E2E/CI: 70 unit + 36 E2E), **sección 6 completa** (a11y), **sección 7 completa** (UX de flujo/interacción: 78 unit + 51 E2E) y **sección 8 completa** (tooling/calidad: commit convention, npm audit 0 vulns, TS strict sin any, .env.example, README + screenshots, deploy Vercel, CHANGELOG 1.0.0). **Sección 11 completa** (frontend polish: fuentes, idiomas, botones, animaciones, extras — 128 unit + 108 E2E ✓). **Backend/multiplayer postergado a futuro** (secciones 9-10 y punto 17). Próxima: **sección 3** (métricas avanzadas) u otra mejora pendiente del roadmap.
 > Referencias de código: `src/components/TypingTest.tsx`, `src/lib/words.ts`, `src/index.css`, `src/App.tsx`.
 
 ---
@@ -237,10 +237,10 @@
 
 ### 11.5 Extras (✍️ ideas propias)
 
-- [ ] **Custom theme**: editor de colores (hue/lightness sliders) guardado en settings, sobre las paletas existentes.
-- [ ] **Word accuracy** (palabras correctas vs total) además del accuracy por caracteres.
-- [ ] **Gráfico de evolución de WPM** en el historial (mini line chart con `getHistory`).
-- [ ] **Búsqueda en historial** (fecha/modo/opción) además de los filtros actuales.
+- [x] **Custom theme**: editor de colores (hue/lightness sliders) guardado en settings, sobre las paletas existentes. `CustomTheme {hue, lightness}` en `Settings`, saneado al cargar (clamp hue 0–360, lightness 0.2–0.8), `applyCssVars` sobreescribe `--primary/--ring/--typer-caret` con `oklch(lightness 0.2 hue)`, swatch custom + sliders en `SettingsDialog`, al tocar una paleta existente se limpia el custom theme. Unit en `settings.test.ts` (load/clamp/malformed/override) + E2E (aplica vars, persiste tras reload, presets limpian).
+- [x] **Word accuracy** (palabras correctas vs total) además del accuracy por caracteres. `calcResults` cuenta `correctWords` (vía `wordHasError`) y `totalWords`; ResultsScreen muestra `words {correct}/{total}` bajo el acc. Unit en `typing.test.ts` + `ResultsScreen.test.tsx` + E2E (una palabra mal → `words 9/10`).
+- [x] **Gráfico de evolución de WPM** en el historial (mini line chart con `getHistory`). `WpmTrend` en `HistoryDialog` (SVG polyline + area con `--primary`, min 2 entries → "not enough data to plot"). E2E en `extras.spec.ts`.
+- [x] **Búsqueda en historial** (fecha/modo/opción) además de los filtros actuales. Helpers puros `matchesHistorySearch`/`filterHistory` + tipo `HistoryFilter` en `history.ts`, input con `aria-label="Search history"`, combinable con los filtros de modo. Unit en `history.test.ts` + E2E.
 
 ---
 
