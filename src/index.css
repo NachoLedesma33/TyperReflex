@@ -604,7 +604,7 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-variant-ligatures: none;
+    font-variant-ligatures: var(--typer-ligatures, none);
   }
   ::-webkit-scrollbar {
     width: 10px;

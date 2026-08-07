@@ -96,6 +96,17 @@ export function SettingsDialog() {
             </div>
           </div>
 
+          <div className="flex items-center justify-between">
+            <Label htmlFor="settings-ligatures" className="font-mono">
+              Font ligatures
+            </Label>
+            <Switch
+              id="settings-ligatures"
+              checked={settings.ligatures}
+              onCheckedChange={(v) => updateSettings({ ligatures: v })}
+            />
+          </div>
+
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="settings-font-size" className="font-mono">

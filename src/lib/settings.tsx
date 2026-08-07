@@ -148,6 +148,20 @@ export const FONT_OPTIONS: { id: FontId; name: string }[] = [
   { id: "courier", name: "Courier Prime" },
 ];
 
+// Per-font tuning so every mono face reads at the same visual density. Weight
+// is only overridden for variable faces (interpolated); discrete faces keep 400.
+export const FONT_METRICS: Record<
+  FontId,
+  { letterSpacing: string; weight: string }
+> = {
+  jetbrains: { letterSpacing: "0.02em", weight: "400" },
+  fira: { letterSpacing: "0.025em", weight: "450" },
+  roboto: { letterSpacing: "0.02em", weight: "450" },
+  ibmplex: { letterSpacing: "0.015em", weight: "400" },
+  space: { letterSpacing: "0.03em", weight: "400" },
+  courier: { letterSpacing: "0.03em", weight: "400" },
+};
+
 export interface CustomTheme {
   hue: number;
   lightness: number;
@@ -158,6 +172,7 @@ export interface Settings {
   fontSize: number;
   wordGap: number;
   soundEnabled: boolean;
+  ligatures: boolean;
   palette: PaletteId;
   themeId: ThemeId;
   caretStyle: "bar" | "block";
@@ -177,6 +192,7 @@ export const DEFAULT_SETTINGS: Settings = {
   fontSize: 2.125,
   wordGap: 0.9,
   soundEnabled: false,
+  ligatures: false,
   palette: "crimson",
   themeId: "classic",
   caretStyle: "bar",
@@ -200,6 +216,8 @@ export function loadSettings(): Settings {
     const lang = parsed.language;
     const language: Language =
       lang !== undefined && LANGUAGES.some((l) => l.id === lang) ? lang : "en";
+    const ligatures =
+      typeof parsed.ligatures === "boolean" ? parsed.ligatures : false;
     let customTheme: CustomTheme | null = null;
     const ct = parsed.customTheme;
     if (
@@ -216,7 +234,7 @@ export function loadSettings(): Settings {
         lightness: Math.max(0.2, Math.min(0.8, ct.lightness)),
       };
     }
-    return { ...DEFAULT_SETTINGS, ...parsed, language, customTheme };
+    return { ...DEFAULT_SETTINGS, ...parsed, language, customTheme, ligatures };
   } catch {
     return DEFAULT_SETTINGS;
   }
@@ -246,6 +264,13 @@ export function applyCssVars(settings: Settings) {
   }
 
   root.style.setProperty("--font-mono", FONT_STACKS[settings.fontFamily]);
+  root.style.setProperty(
+    "--typer-ligatures",
+    settings.ligatures ? "normal" : "none"
+  );
+  const metrics = FONT_METRICS[settings.fontFamily];
+  root.style.setProperty("--typer-letter-spacing", metrics.letterSpacing);
+  root.style.setProperty("--typer-font-weight", metrics.weight);
 
   const fs = settings.fontSize;
   const minFs = Math.max(0.875, fs - 0.25);

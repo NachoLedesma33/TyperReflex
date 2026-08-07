@@ -112,7 +112,7 @@ function WordSpanComponent({
     <span
       ref={setRef}
       className={cn(
-        "relative inline-flex font-mono tracking-wide",
+        "relative inline-flex font-mono",
         isCurrent && "border-b-2 border-typer-word-border",
         isCurrent && strictReject && "typer-strict-reject",
         isCurrent && !strictReject && "typer-word-glow"
@@ -120,6 +120,8 @@ function WordSpanComponent({
       style={{
         fontSize: "var(--typer-font-size)",
         lineHeight: "var(--typer-line-height)",
+        letterSpacing: "var(--typer-letter-spacing, 0.025em)",
+        fontWeight: "var(--typer-font-weight, 400)",
       }}
     >
       {Array.from({ length: totalLen }, (_, i) => {
