@@ -137,7 +137,18 @@ El plan de mejoras completo y su estado vive en [`PLAN_MEJORAS.md`](PLAN_MEJORAS
 
 ## Screenshots
 
-![Desktop light](docs/screenshots/desktop-light.png)
-![Desktop dark](docs/screenshots/desktop-dark.png)
-![Results](docs/screenshots/results.png)
-![Mobile](docs/screenshots/mobile.png)
+| Modo claro — pantalla principal                   | Modo oscuro — misma vista                         |
+| ------------------------------------------------- | ------------------------------------------------- |
+| ![Modo claro](docs/screenshots/desktop-light.png) | ![Modo oscuro](docs/screenshots/desktop-dark.png) |
+
+| Test en progreso — focus mode                     | Resultados — gráficos y estadísticas        |
+| ------------------------------------------------- | ------------------------------------------- |
+| ![Test en progreso](docs/screenshots/running.png) | ![Resultados](docs/screenshots/results.png) |
+
+| Ajustes — temas, fuentes, opciones        | Historial — filtros y evolución            |
+| ----------------------------------------- | ------------------------------------------ |
+| ![Ajustes](docs/screenshots/settings.png) | ![Historial](docs/screenshots/history.png) |
+
+| Estadísticas — benchmark vs tus runs        | Mobile — responsive                    |
+| ------------------------------------------- | -------------------------------------- |
+| ![Estadísticas](docs/screenshots/stats.png) | ![Mobile](docs/screenshots/mobile.png) |
