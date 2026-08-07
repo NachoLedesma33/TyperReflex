@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import type { SVGProps } from "react";
+import { createRef } from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ToolBtn } from "@/components/ToolBtn";
@@ -93,5 +94,28 @@ describe("ToolBtn", () => {
     expect(screen.getByRole("button", { name: "restart" })).not.toHaveAttribute(
       "title"
     );
+  });
+
+  it("forwards extra props to the button (radix trigger contract)", () => {
+    const onPointerDown = vi.fn();
+    const ref = createRef<HTMLButtonElement>();
+    const { container } = render(
+      <ToolBtn
+        title="theme"
+        ariaLabel="Toggle theme"
+        onPointerDown={onPointerDown}
+        data-state="open"
+        aria-haspopup="menu"
+        ref={ref}
+      >
+        <svg data-testid="icon" />
+      </ToolBtn>
+    );
+    const btn = container.querySelector("button");
+    expect(btn).toBe(ref.current);
+    expect(btn).toHaveAttribute("data-state", "open");
+    expect(btn).toHaveAttribute("aria-haspopup", "menu");
+    btn?.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
+    expect(onPointerDown).toHaveBeenCalledTimes(1);
   });
 });

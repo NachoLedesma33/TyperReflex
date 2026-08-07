@@ -60,18 +60,7 @@ const ICON_SIZE: Record<
   icon: "size-5",
 };
 
-export function ToolBtn({
-  variant,
-  size,
-  active = false,
-  onClick,
-  title,
-  icon: Icon,
-  ariaLabel,
-  className,
-  disabled,
-  children,
-}: {
+export type ToolBtnProps = {
   variant?: VariantProps<typeof toolBtnVariants>["variant"];
   size?: VariantProps<typeof toolBtnVariants>["size"];
   active?: boolean;
@@ -82,41 +71,65 @@ export function ToolBtn({
   className?: string;
   disabled?: boolean;
   children?: React.ReactNode;
-}) {
-  const button = (
-    <button
-      onClick={onClick}
-      aria-pressed={active}
-      aria-label={ariaLabel}
-      disabled={disabled}
-      className={cn(toolBtnVariants({ variant, size, active }), className)}
-    >
-      {Icon && (
-        <Icon
-          className={cn(ICON_SIZE[size ?? "sm"], "shrink-0")}
-          aria-hidden="true"
-        />
-      )}
-      {children}
-    </button>
-  );
+} & Omit<
+  React.ComponentPropsWithoutRef<"button">,
+  "onClick" | "children" | "className" | "disabled" | "aria-label"
+>;
 
-  if (!title) return button;
+export const ToolBtn = React.forwardRef<HTMLButtonElement, ToolBtnProps>(
+  function ToolBtn(
+    {
+      variant,
+      size,
+      active = false,
+      onClick,
+      title,
+      icon: Icon,
+      ariaLabel,
+      className,
+      disabled,
+      children,
+      ...rest
+    },
+    ref
+  ) {
+    const button = (
+      <button
+        ref={ref}
+        onClick={onClick}
+        aria-pressed={active}
+        aria-label={ariaLabel}
+        disabled={disabled}
+        className={cn(toolBtnVariants({ variant, size, active }), className)}
+        {...rest}
+      >
+        {Icon && (
+          <Icon
+            className={cn(ICON_SIZE[size ?? "sm"], "shrink-0")}
+            aria-hidden="true"
+          />
+        )}
+        {children}
+      </button>
+    );
 
-  return (
-    <Tooltip.Provider delayDuration={500} skipDelayDuration={200}>
-      <Tooltip.Root>
-        <Tooltip.Trigger asChild>{button}</Tooltip.Trigger>
-        <Tooltip.Portal>
-          <Tooltip.Content
-            sideOffset={6}
-            className="z-50 rounded-md bg-popover px-2 py-1 font-mono text-xs text-popover-foreground shadow-md animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95"
-          >
-            {title}
-            <Tooltip.Arrow className="fill-popover" />
-          </Tooltip.Content>
-        </Tooltip.Portal>
-      </Tooltip.Root>
-    </Tooltip.Provider>
-  );
-}
+    if (!title) return button;
+
+    return (
+      <Tooltip.Provider delayDuration={500} skipDelayDuration={200}>
+        <Tooltip.Root>
+          <Tooltip.Trigger asChild>{button}</Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content
+              sideOffset={6}
+              className="z-50 rounded-md bg-popover px-2 py-1 font-mono text-xs text-popover-foreground shadow-md animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95"
+            >
+              {title}
+              <Tooltip.Arrow className="fill-popover" />
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+      </Tooltip.Provider>
+    );
+  }
+);
