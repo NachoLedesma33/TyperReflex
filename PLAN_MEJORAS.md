@@ -1,6 +1,6 @@
 # TyperReflex – Plan de Mejoras
 
-> Estado: Fases 0–4 completas, **sección 1 completa** (componentes/funcionalidad), **sección 2 completa** (estilos/UI/UX), **sección 4 completa** (tests unit + component + E2E/CI: 70 unit + 36 E2E), **sección 6 completa** (a11y), **sección 7 completa** (UX de flujo/interacción: 78 unit + 51 E2E) y **sección 8 completa** (tooling/calidad: commit convention, npm audit 0 vulns, TS strict sin any, .env.example, README + screenshots, deploy Vercel, CHANGELOG 1.0.0). **Sección 11 completa** (frontend polish: fuentes + ligaduras + UI font, idiomas, botones, animaciones, extras — 135 unit + 120 E2E ✓). **Backend/multiplayer postergado a futuro** (secciones 9-10 y punto 17). Próxima: **sección 9 – Datos/Analytics** (meta-benchmark local) u otra mejora front del roadmap.
+> Estado: Fases 0–4 completas, **sección 1 completa** (componentes/funcionalidad), **sección 2 completa** (estilos/UI/UX), **sección 4 completa** (tests unit + component + E2E/CI: 70 unit + 36 E2E), **sección 6 completa** (a11y), **sección 7 completa** (UX de flujo/interacción: 78 unit + 51 E2E) y **sección 8 completa** (tooling/calidad: commit convention, npm audit 0 vulns, TS strict sin any, .env.example, README + screenshots, deploy Vercel, CHANGELOG 1.0.0). **Sección 9 completa** (Datos/Analytics: stats agregadas, calendario de actividad, meta-benchmark local vs tus propios runs, historial con filtros — helpers `wpmPercentile`/`wpmDistribution` en `src/lib/stats.ts`, sección "benchmark (vs your runs)" en StatsDialog). **Sección 11 completa** (frontend polish: fuentes + ligaduras + UI font, idiomas, botones, animaciones, extras — 143 unit + 123 E2E ✓). **Backend/multiplayer postergado a futuro** (secciones 10 y punto 17). Próxima: coordinar con el usuario — no queda pendiente front en el plan, solo backend.
 > Referencias de código: `src/components/TypingTest.tsx`, `src/lib/words.ts`, `src/index.css`, `src/App.tsx`.
 
 ---
@@ -191,7 +191,7 @@
 
 - [x] **Stats agregadas** por usuario (media de wpm, racha, total de caracteres) en localStorage.
 - [x] **Calendario de actividad** (streak) estilo GitHub.
-- [ ] **Meta-benchmark**: comparar tu wpm con percentiles de la comunidad (offline/local).
+- [x] **Meta-benchmark**: comparar tu wpm con percentiles (offline/local vs tus propios runs). Helpers `wpmPercentile`/`wpmDistribution` en `src/lib/stats.ts`; en StatsDialog sección "benchmark (vs your runs)" con tiles mean/best rank (`better than X%`) y gráfico de barras de la distribución de wpm (bucket actual resaltado con `bg-primary`).
 - [x] **Historial por día** con filtros por modo.
 
 ---
