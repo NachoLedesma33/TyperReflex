@@ -142,3 +142,37 @@ test("header title uses the ui font", async ({ page }) => {
   await expect(title).toBeVisible();
   await expect(title).toHaveCSS("font-family", /Space Grotesk/);
 });
+
+test("ligatures toggle switches the computed font feature", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const ligatures = () =>
+    page.evaluate(() => getComputedStyle(document.body).fontVariantLigatures);
+  await expect.poll(ligatures).toBe("none");
+
+  await page.getByRole("button", { name: "Settings" }).click();
+  const dialog = page.getByRole("dialog");
+  await dialog.getByRole("switch", { name: "Font ligatures" }).click();
+  await expect.poll(ligatures).toBe("normal");
+
+  await dialog.getByRole("switch", { name: "Font ligatures" }).click();
+  await expect.poll(ligatures).toBe("none");
+});
+
+test("switching font applies its letter-spacing metric", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Settings" }).click();
+  await page.getByRole("combobox", { name: "Font" }).click();
+  await page.getByRole("option", { name: "Space Mono" }).click();
+
+  await expect
+    .poll(async () =>
+      page.evaluate(() =>
+        getComputedStyle(document.documentElement).getPropertyValue(
+          "--typer-letter-spacing"
+        )
+      )
+    )
+    .toBe("0.03em");
+});

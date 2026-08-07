@@ -3,6 +3,7 @@ import {
   DEFAULT_SETTINGS,
   applyCssVars,
   deletePreset,
+  FONT_METRICS,
   FONT_OPTIONS,
   FONT_STACKS,
   loadSettings,
@@ -109,6 +110,33 @@ describe("loadSettings", () => {
     );
     expect(loadSettings().customTheme).toBeNull();
   });
+
+  it("defaults to ligatures off", () => {
+    expect(loadSettings().ligatures).toBe(false);
+  });
+
+  it("loads a stored ligatures setting", () => {
+    window.localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ ligatures: true })
+    );
+    expect(loadSettings().ligatures).toBe(true);
+  });
+
+  it("rejects a non-boolean ligatures setting", () => {
+    window.localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ ligatures: "yes" })
+    );
+    expect(loadSettings().ligatures).toBe(false);
+  });
+
+  it("exposes per-font metrics for every option", () => {
+    for (const f of FONT_OPTIONS) {
+      expect(FONT_METRICS[f.id].letterSpacing).toMatch(/^0\.0\d+em$/);
+      expect(FONT_METRICS[f.id].weight).toMatch(/^4\d\d$/);
+    }
+  });
 });
 
 describe("applyCssVars", () => {
@@ -127,6 +155,25 @@ describe("applyCssVars", () => {
     expect(
       document.documentElement.style.getPropertyValue("--font-mono")
     ).toContain("Fira Code");
+  });
+
+  it("sets ligatures and per-font metrics vars", () => {
+    applyCssVars({ ...DEFAULT_SETTINGS, fontFamily: "space", ligatures: true });
+    const root = document.documentElement;
+    expect(root.style.getPropertyValue("--typer-ligatures")).toBe("normal");
+    expect(root.style.getPropertyValue("--typer-letter-spacing")).toBe(
+      FONT_METRICS.space.letterSpacing
+    );
+    expect(root.style.getPropertyValue("--typer-font-weight")).toBe(
+      FONT_METRICS.space.weight
+    );
+  });
+
+  it("turns ligatures off by default", () => {
+    applyCssVars(DEFAULT_SETTINGS);
+    expect(
+      document.documentElement.style.getPropertyValue("--typer-ligatures")
+    ).toBe("none");
   });
 
   it("removes the theme class for classic", () => {
