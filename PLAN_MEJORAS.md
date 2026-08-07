@@ -241,6 +241,7 @@
 - [x] **Word accuracy** (palabras correctas vs total) además del accuracy por caracteres. `calcResults` cuenta `correctWords` (vía `wordHasError`) y `totalWords`; ResultsScreen muestra `words {correct}/{total}` bajo el acc. Unit en `typing.test.ts` + `ResultsScreen.test.tsx` + E2E (una palabra mal → `words 9/10`).
 - [x] **Gráfico de evolución de WPM** en el historial (mini line chart con `getHistory`). `WpmTrend` en `HistoryDialog` (SVG polyline + area con `--primary`, min 2 entries → "not enough data to plot"). E2E en `extras.spec.ts`.
 - [x] **Búsqueda en historial** (fecha/modo/opción) además de los filtros actuales. Helpers puros `matchesHistorySearch`/`filterHistory` + tipo `HistoryFilter` en `history.ts`, input con `aria-label="Search history"`, combinable con los filtros de modo. Unit en `history.test.ts` + E2E.
+- [x] ✍️ **Click en el título del header reinicia el test**: el título ahora es un `<button>` que dispara el evento custom `typerreflex-restart` → `TypingTest` hace `resetTest()` (sin recargar página, conservando settings/modo). `focus-visible` ring + `cursor-pointer` + `hover:opacity-90`. Nota UX: durante focus mode el header está oculto (`visibility:hidden`), así que en E2E hay que hacer `Escape` (pausa) antes de clickear. Unit en `TypingTest.test.tsx` (evento → input vacío + contador idle) + E2E en `ux.spec.ts`.
 
 ---
 
