@@ -72,10 +72,16 @@ describe("loadSettings", () => {
   });
 
   it("exposes a font stack for every option", () => {
-    expect(FONT_OPTIONS).toHaveLength(5);
+    expect(FONT_OPTIONS).toHaveLength(6);
     for (const f of FONT_OPTIONS) {
       expect(FONT_STACKS[f.id]).toContain(f.name);
     }
+  });
+
+  it("includes courier prime as a mono option", () => {
+    const courier = FONT_OPTIONS.find((f) => f.id === "courier");
+    expect(courier?.name).toBe("Courier Prime");
+    expect(FONT_STACKS.courier).toContain("Courier Prime");
   });
 
   it("falls back to defaults on corrupt JSON", () => {

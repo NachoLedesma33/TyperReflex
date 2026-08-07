@@ -118,3 +118,27 @@ test("font selector switches the mono font stack and persists", async ({
     )
     .toContain("Fira Code");
 });
+
+test("courier prime is selectable and applies its stack", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Settings" }).click();
+  await page.getByRole("combobox", { name: "Font" }).click();
+  await page.getByRole("option", { name: "Courier Prime" }).click();
+
+  await expect
+    .poll(async () =>
+      page.evaluate(() =>
+        getComputedStyle(document.documentElement).getPropertyValue(
+          "--font-mono"
+        )
+      )
+    )
+    .toContain("Courier Prime");
+});
+
+test("header title uses the ui font", async ({ page }) => {
+  await page.goto("/");
+  const title = page.locator("header").getByText("TyperReflex");
+  await expect(title).toBeVisible();
+  await expect(title).toHaveCSS("font-family", /Space Grotesk/);
+});
