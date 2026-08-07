@@ -12,10 +12,13 @@ import {
 } from "@/components/ui/dialog";
 import { ActivityCalendar } from "@/components/ActivityCalendar";
 import { KeyboardHeatmap } from "@/components/KeyboardHeatmap";
+import { getHistory, type HistoryEntry } from "@/lib/history";
 import {
   computeStreak,
   getKeyHeatmap,
   getStats,
+  wpmDistribution,
+  wpmPercentile,
   type GlobalStats,
 } from "@/lib/stats";
 
@@ -40,18 +43,73 @@ function StatTile({ label, value }: { label: string; value: string }) {
   );
 }
 
+function Benchmark({
+  history,
+  meanWpm,
+  bestWpm,
+}: {
+  history: HistoryEntry[];
+  meanWpm: number;
+  bestWpm: number;
+}) {
+  if (history.length === 0) return null;
+  const meanRank = wpmPercentile(history, meanWpm);
+  const bestRank = wpmPercentile(history, bestWpm);
+  const dist = wpmDistribution(history);
+  const maxCount = Math.max(...dist.map((b) => b.count), 1);
+  const meanBucket = dist.findIndex(
+    (b) => meanWpm >= b.min && meanWpm < b.min + 10
+  );
+  const highest = dist[dist.length - 1];
+
+  return (
+    <div className="flex flex-col gap-2">
+      <p className="font-mono text-xs text-typer-untyped">
+        benchmark (vs your runs)
+      </p>
+      <div className="grid grid-cols-2 gap-2">
+        <StatTile label="mean rank" value={`better than ${meanRank}%`} />
+        <StatTile label="best rank" value={`better than ${bestRank}%`} />
+      </div>
+      <div className="flex items-end gap-1 h-20">
+        {dist.map((b, i) => (
+          <div key={b.min} className="flex-1 flex flex-col justify-end">
+            <div
+              title={`${b.min}-${b.min + 9}: ${b.count}`}
+              className={[
+                "w-full rounded-sm",
+                i === meanBucket
+                  ? "bg-primary shadow-[0_0_8px_-2px] shadow-primary/60"
+                  : "bg-typer-untyped/30",
+              ].join(" ")}
+              style={{
+                height: `${Math.max((b.count / maxCount) * 100, 4)}%`,
+              }}
+            />
+          </div>
+        ))}
+      </div>
+      <p className="font-mono text-[11px] text-typer-untyped opacity-70">
+        {dist[0].min}–{highest.min + 9} wpm distribution
+      </p>
+    </div>
+  );
+}
+
 export function StatsDialog() {
   const [open, setOpen] = useState(false);
   const [stats, setStats] = useState<GlobalStats>(() => getStats());
   const [heatmap, setHeatmap] = useState<Record<string, number>>(() =>
     getKeyHeatmap()
   );
+  const [history, setHistory] = useState<HistoryEntry[]>(() => getHistory());
 
   const handleOpenChange = (next: boolean) => {
     setOpen(next);
     if (next) {
       setStats(getStats());
       setHeatmap(getKeyHeatmap());
+      setHistory(getHistory());
     }
   };
 
@@ -103,6 +161,12 @@ export function StatsDialog() {
               <StatTile label="current streak" value={String(streak.current)} />
               <StatTile label="longest streak" value={String(streak.longest)} />
             </div>
+
+            <Benchmark
+              history={history}
+              meanWpm={meanWpm}
+              bestWpm={stats.bestWpm}
+            />
 
             <div className="flex flex-col gap-2">
               <p className="font-mono text-xs text-typer-untyped">
