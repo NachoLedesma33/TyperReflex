@@ -124,7 +124,8 @@ export const THEMES: Theme[] = [
   { id: "sand", name: "Sand" },
 ];
 
-export type FontId = "jetbrains" | "fira" | "roboto" | "ibmplex" | "space";
+export type FontId =
+  "jetbrains" | "fira" | "roboto" | "ibmplex" | "space" | "courier";
 
 const FONT_FALLBACK =
   "ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace";
@@ -135,6 +136,7 @@ export const FONT_STACKS: Record<FontId, string> = {
   roboto: `"Roboto Mono", ${FONT_FALLBACK}`,
   ibmplex: `"IBM Plex Mono", ${FONT_FALLBACK}`,
   space: `"Space Mono", ${FONT_FALLBACK}`,
+  courier: `"Courier Prime", ${FONT_FALLBACK}`,
 };
 
 export const FONT_OPTIONS: { id: FontId; name: string }[] = [
@@ -143,6 +145,7 @@ export const FONT_OPTIONS: { id: FontId; name: string }[] = [
   { id: "roboto", name: "Roboto Mono" },
   { id: "ibmplex", name: "IBM Plex Mono" },
   { id: "space", name: "Space Mono" },
+  { id: "courier", name: "Courier Prime" },
 ];
 
 export interface CustomTheme {

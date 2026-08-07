@@ -59,7 +59,7 @@ export function SettingsDialog() {
       </DialogTrigger>
       <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle className="font-mono text-xl">Settings</DialogTitle>
+          <DialogTitle className="font-ui text-xl">Settings</DialogTitle>
           <DialogDescription>
             Preferences are saved on this device.
           </DialogDescription>

@@ -68,7 +68,7 @@ export function StatsDialog() {
       </DialogTrigger>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle className="font-mono text-xl">Stats</DialogTitle>
+          <DialogTitle className="font-ui text-xl">Stats</DialogTitle>
           <DialogDescription>
             Your lifetime typing statistics.
           </DialogDescription>

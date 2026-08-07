@@ -160,7 +160,7 @@ export function HistoryDialog() {
       </DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="font-mono text-xl">History</DialogTitle>
+          <DialogTitle className="font-ui text-xl">History</DialogTitle>
           <DialogDescription>Your recent results.</DialogDescription>
         </DialogHeader>
         <div className="flex gap-1 mb-3">
