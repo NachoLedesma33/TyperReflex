@@ -1,6 +1,6 @@
 # TyperReflex – Plan de Mejoras
 
-> Estado: Fases 0–4 completas, **sección 1 completa** (componentes/funcionalidad), **sección 2 completa** (estilos/UI/UX), **sección 4 completa** (tests unit + component + E2E/CI: 70 unit + 36 E2E), **sección 6 completa** (a11y), **sección 7 completa** (UX de flujo/interacción: 78 unit + 51 E2E) y **sección 8 completa** (tooling/calidad: commit convention, npm audit 0 vulns, TS strict sin any, .env.example, README + screenshots, deploy Vercel, CHANGELOG 1.0.0). Últimas tandas: **focus mode**, **backspace vuelve a la palabra anterior**, **header full-width** y **accuracy que cuenta errores corregidos** — 83 unit + 57 E2E ✓. **Backend/multiplayer postergado a futuro** (secciones 9-10 y punto 17). Próxima: **sección 11 – mejoras frontend** (fuentes, idiomas, botones, animaciones).
+> Estado: Fases 0–4 completas, **sección 1 completa** (componentes/funcionalidad), **sección 2 completa** (estilos/UI/UX), **sección 4 completa** (tests unit + component + E2E/CI: 70 unit + 36 E2E), **sección 6 completa** (a11y), **sección 7 completa** (UX de flujo/interacción: 78 unit + 51 E2E) y **sección 8 completa** (tooling/calidad: commit convention, npm audit 0 vulns, TS strict sin any, .env.example, README + screenshots, deploy Vercel, CHANGELOG 1.0.0). **Sección 11 completa hasta 11.4** (frontend polish: fuentes, idiomas, botones, animaciones — 114 unit + 96 E2E ✓). **Backend/multiplayer postergado a futuro** (secciones 9-10 y punto 17). Próxima: **11.5 – extras** (custom theme, word accuracy, evolución de WPM en historial, búsqueda).
 > Referencias de código: `src/components/TypingTest.tsx`, `src/lib/words.ts`, `src/index.css`, `src/App.tsx`.
 
 ---
@@ -229,11 +229,11 @@
 
 ### 11.4 Animaciones
 
-- [ ] **Count-up animado** de WPM/accuracy en resultados.
-- [ ] **Fade-in escalonado** de la pantalla de resultados (stats → charts).
-- [ ] ✍️ **Transición entre estados** (idle→running→finished) y fade de overlays de pausa/reset.
-- [ ] ✍️ **Shimmer/glow** en la barra de progreso y en la palabra activa.
-- [ ] ✍️ Todo respetando `prefers-reduced-motion` (media query ya existente).
+- [x] **Count-up animado** de WPM/accuracy en resultados: hook `src/lib/useCountUp.ts` (`easeOutCubic` + `prefersReducedMotion`; en `MODE=test` o media query `reduce` devuelve el target directo → tests unit estables en jsdom). Integrado en `ResultsScreen` (wpm y acc, 900ms, rAF). El sr-only `role="status"` conserva los valores reales.
+- [x] **Fade-in escalonado** de la pantalla de resultados (stats → charts): clase `.typer-fade-up` (0.45s ease-out, `both`) con `animation-delay` por sección — header stats 0ms, chart 90ms, heatmap 140ms, grid de stats 200ms, top errors 260ms, acciones 320ms.
+- [x] ✍️ **Transición entre estados** (idle→running→finished): la fila contador/timer se re-keyea por `gameStatus` (fade-up sutil al cambiar de estado); overlays de pausa y confirmación de reset con `.typer-fade-in` (0.2s ease-out).
+- [x] ✍️ **Shimmer/glow** en la barra de progreso y en la palabra activa: `.typer-progress-glow` en el fill (glow box-shadow `typerGlow` 1.8s + shimmer `::after` `typerShimmer` 2.2s con gradiente sobre `--primary-foreground`); `.typer-word-glow` (box-shadow bajo el underline, `typerWordGlow` 2.4s) en la palabra actual — no se aplica en strict-reject para no pisar su shake.
+- [x] ✍️ Todo respetando `prefers-reduced-motion`: la media query global existente ahora también fuerza `animation-delay: 0s !important` (el fill `both` de los fades no deja contenido invisible durante el stagger); count-up en reduced devuelve el valor final directo. E2E `e2e/animations.spec.ts` (shimmer + glow corriendo, fade del overlay de pausa, count-up hasta el valor final anunciado en sr-only).
 
 ### 11.5 Extras (✍️ ideas propias)
 
@@ -283,7 +283,7 @@
 18. [~] Fuentes adicionales (mono self-hosted: Fira Code, Roboto Mono, IBM Plex Mono, Space Mono) + fuente de UI separada pendiente.
 19. [x] Idiomas (en/es/pt + normalización + modo práctica de acentos).
 20. [x] Rediseño de botones (variantes, estados, tooltips).
-21. [ ] Animaciones profesionales (count-up, fades, transiciones).
+21. [x] Animaciones profesionales (count-up, fades, transiciones).
 22. [ ] Custom theme + word accuracy + evolución de WPM en historial.
 
 ---
