@@ -114,7 +114,8 @@ function WordSpanComponent({
       className={cn(
         "relative inline-flex font-mono tracking-wide",
         isCurrent && "border-b-2 border-typer-word-border",
-        isCurrent && strictReject && "typer-strict-reject"
+        isCurrent && strictReject && "typer-strict-reject",
+        isCurrent && !strictReject && "typer-word-glow"
       )}
       style={{
         fontSize: "var(--typer-font-size)",
@@ -1210,7 +1211,10 @@ export function TypingTest() {
       />
 
       {/* ── Counter / timer ── */}
-      <div className="h-10 flex items-center gap-3">
+      <div
+        key={gameStatus}
+        className="typer-fade-up h-10 flex items-center gap-3"
+      >
         <span aria-live="polite" className="sr-only">
           {liveAnnounce}
         </span>
@@ -1263,7 +1267,7 @@ export function TypingTest() {
           aria-label="test progress"
         >
           <div
-            className="h-full bg-primary transition-[width] duration-200 ease-linear"
+            className="typer-progress-glow h-full bg-primary transition-[width] duration-200 ease-linear"
             style={{ width: `${progressPct}%` }}
           />
         </div>
@@ -1348,7 +1352,7 @@ export function TypingTest() {
               resumeTest();
               inputRef.current?.focus();
             }}
-            className="absolute inset-0 z-10 flex items-center justify-center gap-2 bg-background/60 backdrop-blur-[1px] cursor-pointer font-mono text-xl text-primary"
+            className="typer-fade-in absolute inset-0 z-10 flex items-center justify-center gap-2 bg-background/60 backdrop-blur-[1px] cursor-pointer font-mono text-xl text-primary"
           >
             paused – esc to resume
           </button>
@@ -1356,7 +1360,7 @@ export function TypingTest() {
 
         {/* Restart confirmation – shown instead of resetting when enabled */}
         {confirmReset && (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-background/80 backdrop-blur-sm">
+          <div className="typer-fade-in absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 bg-background/80 backdrop-blur-sm">
             <p className="font-mono text-xl text-typer-untyped">
               restart? progress will be lost
             </p>

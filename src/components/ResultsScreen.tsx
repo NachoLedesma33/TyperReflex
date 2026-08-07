@@ -13,6 +13,7 @@ import {
 import { Check, Copy, Download, RotateCcw, Share2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { useCountUp } from "@/lib/useCountUp";
 import type { HistoryEntry } from "@/lib/history";
 import { getHistory } from "@/lib/history";
 import { KeyboardHeatmap } from "@/components/KeyboardHeatmap";
@@ -157,6 +158,9 @@ export const ResultsScreen = memo(function ResultsScreen({
         : "zen";
   const [copied, setCopied] = useState(false);
 
+  const animatedWpm = useCountUp(results.wpm);
+  const animatedAcc = useCountUp(results.accuracy);
+
   const wpmValues = useMemo(() => chartData.map((d) => d.wpm), [chartData]);
   const consistency =
     wpmValues.length >= 2
@@ -250,17 +254,17 @@ export const ResultsScreen = memo(function ResultsScreen({
         test finished — wpm {results.wpm}, accuracy {results.accuracy}%
         {isNewRecord ? ", new personal best" : ""}
       </p>
-      <div className="flex items-end gap-10">
+      <div className="typer-fade-up flex items-end gap-10">
         <div>
           <p className="font-mono text-xs text-typer-untyped mb-1">wpm</p>
           <p className="font-mono text-9xl font-bold leading-none text-typer-correct tabular-nums">
-            {results.wpm}
+            {animatedWpm}
           </p>
         </div>
         <div className="pb-2">
           <p className="font-mono text-xs text-typer-untyped mb-1">acc</p>
           <p className="font-mono text-5xl font-semibold leading-none text-typer-correct tabular-nums">
-            {results.accuracy}%
+            {animatedAcc}%
           </p>
         </div>
         <div className="pb-2 ml-auto flex flex-col items-end gap-1">
@@ -277,10 +281,15 @@ export const ResultsScreen = memo(function ResultsScreen({
         </div>
       </div>
 
-      <Chart data={chartData} />
+      <div className="typer-fade-up" style={{ animationDelay: "90ms" }}>
+        <Chart data={chartData} />
+      </div>
 
       {keyHeatmap && Object.keys(keyHeatmap).length > 0 && (
-        <div className="flex flex-col gap-3 items-center">
+        <div
+          className="typer-fade-up flex flex-col gap-3 items-center"
+          style={{ animationDelay: "140ms" }}
+        >
           <p className="font-mono text-xs text-typer-untyped self-start">
             mistyped keys
           </p>
@@ -288,7 +297,10 @@ export const ResultsScreen = memo(function ResultsScreen({
         </div>
       )}
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+      <div
+        className="typer-fade-up grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2"
+        style={{ animationDelay: "200ms" }}
+      >
         {[
           { label: "raw", value: String(results.rawWpm) },
           {
@@ -318,7 +330,10 @@ export const ResultsScreen = memo(function ResultsScreen({
       </div>
 
       {topErrors.length > 0 && (
-        <div className="flex flex-col gap-2">
+        <div
+          className="typer-fade-up flex flex-col gap-2"
+          style={{ animationDelay: "260ms" }}
+        >
           <p className="font-mono text-xs text-typer-untyped">top errors</p>
           <div className="flex flex-wrap gap-x-6 gap-y-1">
             {topErrors.map(([pair, count]) => {
@@ -341,7 +356,10 @@ export const ResultsScreen = memo(function ResultsScreen({
         </div>
       )}
 
-      <div className="flex items-center gap-4 flex-wrap">
+      <div
+        className="typer-fade-up flex items-center gap-4 flex-wrap"
+        style={{ animationDelay: "320ms" }}
+      >
         <button
           onClick={onRestart}
           className="group flex items-center gap-2 font-mono text-sm text-typer-untyped hover:text-primary transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary w-fit"

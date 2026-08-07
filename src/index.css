@@ -730,6 +730,94 @@
   animation: splashOut 0.35s ease-in both;
 }
 
+/* ── Results fade-in + stagger ── */
+@keyframes typerFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.typer-fade-up {
+  animation: typerFadeUp 0.45s ease-out both;
+}
+
+/* ── Overlay fade-in ── */
+@keyframes typerFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.typer-fade-in {
+  animation: typerFadeIn 0.2s ease-out both;
+}
+
+/* ── Progress bar glow + shimmer ── */
+@keyframes typerGlow {
+  0%,
+  100% {
+    box-shadow: 0 0 6px -2px
+      color-mix(in oklab, var(--primary) 60%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 14px 0 color-mix(in oklab, var(--primary) 85%, transparent);
+  }
+}
+
+@keyframes typerShimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  60%,
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.typer-progress-glow {
+  position: relative;
+  overflow: hidden;
+  animation: typerGlow 1.8s ease-in-out infinite;
+}
+
+.typer-progress-glow::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in oklab, var(--primary-foreground) 30%, transparent),
+    transparent
+  );
+  animation: typerShimmer 2.2s ease-in-out infinite;
+}
+
+/* ── Active word glow ── */
+@keyframes typerWordGlow {
+  0%,
+  100% {
+    box-shadow: 0 2px 0 0 var(--typer-word-border);
+  }
+  50% {
+    box-shadow: 0 2px 10px 0
+      color-mix(in oklab, var(--typer-caret) 45%, transparent);
+  }
+}
+
+.typer-word-glow {
+  animation: typerWordGlow 2.4s ease-in-out infinite;
+}
+
 /* ── Focus mode: hide surrounding UI while the test is running ── */
 .typer-focus-mode header,
 .typer-focus-mode footer,
@@ -758,6 +846,7 @@
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
