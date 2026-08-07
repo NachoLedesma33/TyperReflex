@@ -3,6 +3,7 @@ import { setWordsMode, typeCurrentWord } from "./helpers";
 
 const SETTINGS_KEY = "typerreflex-settings";
 const HISTORY_KEY = "typerreflex-history";
+const STATS_KEY = "typerreflex-stats";
 
 function seedSettings(overrides: Record<string, unknown>) {
   return (page: import("@playwright/test").Page) =>
@@ -20,6 +21,14 @@ function seedHistory(entries: unknown[]) {
     page.addInitScript(
       ([key, arr]) => localStorage.setItem(key, JSON.stringify(arr)),
       [HISTORY_KEY, entries] as const
+    );
+}
+
+function seedStats(stats: unknown) {
+  return (page: import("@playwright/test").Page) =>
+    page.addInitScript(
+      ([key, obj]) => localStorage.setItem(key, JSON.stringify(obj)),
+      [STATS_KEY, stats] as const
     );
 }
 
@@ -155,6 +164,45 @@ test("history search filters entries and the trend hides with one result", async
   await dialog.getByRole("button", { name: "words", exact: true }).click();
   await expect(dialog.getByText("80", { exact: true })).toBeVisible();
   await expect(dialog.getByText("120", { exact: true })).not.toBeVisible();
+});
+
+test("stats dialog benchmarks wpm against your own runs", async ({ page }) => {
+  const history = [40, 60, 80, 100].map((wpm, i) => ({
+    id: `r${i}`,
+    wpm,
+    rawWpm: wpm + 5,
+    accuracy: 95,
+    correctChars: 250,
+    incorrectChars: 5,
+    extraChars: 0,
+    time: 60,
+    mode: "time",
+    option: 30,
+    date: 1767000000000 + i * 60000,
+  }));
+  await seedHistory(history)(page);
+  await seedStats({
+    tests: 4,
+    totalTypedChars: 1020,
+    totalTimeSecs: 240,
+    bestWpm: 100,
+    bestWpmDate: 1767000180000,
+    wpmSum: 280,
+    accSum: 380,
+    activity: {},
+  })(page);
+  await page.goto("/");
+
+  await page.getByRole("button", { name: "Stats" }).click();
+  const dialog = page.getByRole("dialog");
+
+  await expect(dialog.getByText("benchmark (vs your runs)")).toBeVisible();
+  await expect(dialog.getByText("mean rank")).toBeVisible();
+  await expect(dialog.getByText("best rank")).toBeVisible();
+  // mean wpm 70 beats 40 and 60, best wpm 100 beats everything
+  await expect(dialog.getByText("better than 50%")).toBeVisible();
+  await expect(dialog.getByText("better than 100%")).toBeVisible();
+  await expect(dialog.getByText("0–109 wpm distribution")).toBeVisible();
 });
 
 test("results show correctly typed words vs total", async ({ page }) => {
