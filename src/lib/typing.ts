@@ -64,8 +64,10 @@ export function calcResults(
   let incorrectChars = 0;
   let extraChars = 0;
   let totalTyped = 0;
+  let correctWords = 0;
 
   for (const { word, typed } of completed) {
+    if (!wordHasError(word, typed)) correctWords++;
     totalTyped += typed.length + 1; // +1 for space
     for (let i = 0; i < Math.max(word.length, typed.length); i++) {
       if (i < typed.length && i < word.length) {
@@ -101,6 +103,8 @@ export function calcResults(
     correctChars,
     incorrectChars,
     extraChars,
+    correctWords,
+    totalWords: completed.length,
     time: Math.round(elapsedSecs),
   };
 }

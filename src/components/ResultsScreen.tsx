@@ -25,6 +25,8 @@ export interface Results {
   correctChars: number;
   incorrectChars: number;
   extraChars: number;
+  correctWords: number;
+  totalWords: number;
   time: number;
 }
 
@@ -261,10 +263,13 @@ export const ResultsScreen = memo(function ResultsScreen({
             {animatedWpm}
           </p>
         </div>
-        <div className="pb-2">
+        <div>
           <p className="font-mono text-xs text-typer-untyped mb-1">acc</p>
           <p className="font-mono text-5xl font-semibold leading-none text-typer-correct tabular-nums">
             {animatedAcc}%
+          </p>
+          <p className="font-mono text-xs text-typer-untyped mt-1.5 tabular-nums">
+            words {results.correctWords}/{results.totalWords}
           </p>
         </div>
         <div className="pb-2 ml-auto flex flex-col items-end gap-1">

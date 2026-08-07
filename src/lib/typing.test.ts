@@ -72,6 +72,21 @@ describe("calcResults", () => {
     expect(res.incorrectChars).toBe(0);
     expect(res.extraChars).toBe(0);
     expect(res.time).toBe(60);
+    expect(res.correctWords).toBe(12);
+    expect(res.totalWords).toBe(12);
+  });
+
+  it("counts correctly typed words against the total", () => {
+    const completed = [
+      { word: "cat", typed: "cat" },
+      { word: "dog", typed: "dog" },
+      { word: "bird", typed: "bard" },
+      { word: "fish", typed: "fis" },
+    ];
+    const res = calcResults(completed, 30);
+    expect(res.correctWords).toBe(2);
+    expect(res.totalWords).toBe(4);
+    expect(res.accuracy).toBeLessThan(100);
   });
 
   it("counts incorrect, extra and missed chars", () => {

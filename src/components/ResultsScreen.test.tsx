@@ -15,6 +15,8 @@ const baseResults = {
   correctChars: 300,
   incorrectChars: 12,
   extraChars: 2,
+  correctWords: 24,
+  totalWords: 25,
   time: 60,
 };
 
@@ -58,6 +60,7 @@ describe("ResultsScreen", () => {
     renderScreen();
     expect(screen.getByText("72")).toBeInTheDocument();
     expect(screen.getByText("96%")).toBeInTheDocument();
+    expect(screen.getByText("words 24/25")).toBeInTheDocument();
     expect(screen.getByText("300/12/2")).toBeInTheDocument();
     expect(screen.getByText("25 words")).toBeInTheDocument();
     expect(screen.getByText("60s")).toBeInTheDocument();
