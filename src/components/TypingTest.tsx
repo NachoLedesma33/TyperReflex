@@ -740,6 +740,13 @@ export function TypingTest() {
     }
   }, [gameStatus]);
 
+  // The header title dispatches this event to restart from anywhere.
+  useEffect(() => {
+    const onRestart = () => resetTest();
+    window.addEventListener("typerreflex-restart", onRestart);
+    return () => window.removeEventListener("typerreflex-restart", onRestart);
+  }, [resetTest]);
+
   // Re-initialize when any option changes
   /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {

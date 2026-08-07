@@ -100,9 +100,14 @@ function App() {
 
       {/* Header – full-width so title/menu hug their side margins */}
       <header className="relative z-10 w-full px-6 md:px-10 py-5 flex items-center justify-between gap-4 shrink-0">
-        <span className="font-ui text-2xl sm:text-3xl md:text-4xl font-bold text-primary tracking-tight select-none">
+        <button
+          type="button"
+          title="restart"
+          onClick={() => window.dispatchEvent(new Event("typerreflex-restart"))}
+          className="font-ui text-2xl sm:text-3xl md:text-4xl font-bold text-primary tracking-tight select-none cursor-pointer rounded-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary transition-opacity hover:opacity-90"
+        >
           TyperReflex
-        </span>
+        </button>
         <div className="flex items-center gap-2">
           <Suspense
             fallback={
