@@ -61,6 +61,26 @@ test("finish button ends a running test early and shows results", async ({
   await expect(page.getByRole("button", { name: "restart" })).toBeVisible();
 });
 
+test("clicking the header title restarts the test", async ({ page }) => {
+  await page.goto("/");
+  await setWordsMode(page, 10);
+  await expect(page.getByText("10 words", { exact: true })).toBeVisible();
+  const area = page.getByRole("textbox", { name: "Typing area" });
+  await area.click();
+  await typeCurrentWord(page);
+  await typeCurrentWord(page);
+  await expect(page.getByText("2/10", { exact: true })).toBeVisible();
+
+  // Focus mode hides the header while typing; pause reveals it again
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("button", { name: "resume" })).toBeVisible();
+
+  await page.getByRole("button", { name: "TyperReflex" }).click();
+
+  await expect(page.getByText("10 words", { exact: true })).toBeVisible();
+  await expect(page.getByText("2/10", { exact: true })).not.toBeVisible();
+});
+
 test("strict mode keeps the test on a word until it is corrected", async ({
   page,
 }) => {

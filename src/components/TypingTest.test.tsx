@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { TypingTest } from "@/components/TypingTest";
 import { SettingsProvider, DEFAULT_SETTINGS } from "@/lib/settings";
@@ -295,6 +295,20 @@ describe("TypingTest", () => {
     await user.click(screen.getByRole("button", { name: "restart" }));
     expect(screen.getByText("30s")).toBeInTheDocument();
     expect(input).toHaveValue("");
+  });
+
+  it("restarts from idle when the typerreflex-restart event fires", async () => {
+    const user = setupUser();
+    renderTypingTest();
+    const input = screen.getByLabelText("Typing input");
+    input.focus();
+
+    await user.keyboard("h");
+    expect(input).toHaveValue("h");
+
+    fireEvent(window, new Event("typerreflex-restart"));
+    expect(input).toHaveValue("");
+    expect(screen.getByText("30s")).toBeInTheDocument();
   });
 
   it("flashes the corrected character when backspacing over an error", async () => {
