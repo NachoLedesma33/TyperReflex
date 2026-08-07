@@ -1,6 +1,6 @@
 # TyperReflex – Plan de Mejoras
 
-> Estado: Fases 0–4 completas, **sección 1 completa** (componentes/funcionalidad), **sección 2 completa** (estilos/UI/UX), **sección 4 completa** (tests unit + component + E2E/CI: 70 unit + 36 E2E), **sección 6 completa** (a11y), **sección 7 completa** (UX de flujo/interacción: 78 unit + 51 E2E) y **sección 8 completa** (tooling/calidad: commit convention, npm audit 0 vulns, TS strict sin any, .env.example, README + screenshots, deploy Vercel, CHANGELOG 1.0.0). **Sección 11 completa hasta 11.1-11.5** (frontend polish: fuentes + UI font, idiomas, botones, animaciones, extras — 129 unit + 114 E2E ✓). **Backend/multiplayer postergado a futuro** (secciones 9-10 y punto 17). Próxima: **11.1 item pendiente** (toggle de ligaduras) u otra mejora del roadmap.
+> Estado: Fases 0–4 completas, **sección 1 completa** (componentes/funcionalidad), **sección 2 completa** (estilos/UI/UX), **sección 4 completa** (tests unit + component + E2E/CI: 70 unit + 36 E2E), **sección 6 completa** (a11y), **sección 7 completa** (UX de flujo/interacción: 78 unit + 51 E2E) y **sección 8 completa** (tooling/calidad: commit convention, npm audit 0 vulns, TS strict sin any, .env.example, README + screenshots, deploy Vercel, CHANGELOG 1.0.0). **Sección 11 completa** (frontend polish: fuentes + ligaduras + UI font, idiomas, botones, animaciones, extras — 135 unit + 120 E2E ✓). **Backend/multiplayer postergado a futuro** (secciones 9-10 y punto 17). Próxima: **sección 9 – Datos/Analytics** (meta-benchmark local) u otra mejora front del roadmap.
 > Referencias de código: `src/components/TypingTest.tsx`, `src/lib/words.ts`, `src/index.css`, `src/App.tsx`.
 
 ---
@@ -213,7 +213,7 @@
 
 - [x] **Catálogo de fuentes mono self-hosted** (como JetBrains Mono): Fira Code, Roboto Mono, IBM Plex Mono, Space Mono y **Courier Prime** (6 fuentes con JetBrains, ~210KB de woff2 en `public/fonts/`). Selector en Settings con preview en vivo por fuente + preview box, y persistencia. Fix de test E2E: Radix Select renderiza las opciones en un portal → `page.getByRole("option")` y `expect.poll` para el CSS var tras reload (webkit era flaky por race con el effect de React).
 - [x] ✍️ **Fuente de UI separada** para títulos/headers: **Space Grotesk** (variable woff2 self-hosted, ~22KB) como `--font-ui`/`--font-sans` en `@theme`, manteniendo mono para tipeo/timer. Aplicada a: título del header, splash y `DialogTitle` de History/Settings/Stats (clase `font-ui`); el resto del texto no-mono (descripciones de dialogs, labels) cae en Space Grotesk por defecto. Preload de Space Grotesk en `index.html`. E2E: el título del header debe renderizar en Space Grotesk.
-- [ ] ✍️ **Toggle de ligaduras** + ajuste de peso/espaciado por fuente.
+- [x] ✍️ **Toggle de ligaduras** + ajuste de peso/espaciado por fuente. Switch "Font ligatures" en Settings (default off; `body` usa `font-variant-ligatures: var(--typer-ligatures)`). `FONT_METRICS` con `letterSpacing`/`weight` por fuente (weight solo en caras variables: Fira 450, Roboto 450; el resto 400), aplicados vía `--typer-letter-spacing`/`--typer-font-weight` en el `WordSpan` del área de tipeo (reemplaza `tracking-wide`).
 
 ### 11.2 Idiomas
 
