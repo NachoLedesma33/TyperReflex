@@ -40,6 +40,11 @@ export function SettingsDialog() {
   const [presets, setPresets] = useState<SettingsPreset[]>(() => getPresets());
   const [presetName, setPresetName] = useState("");
 
+  const currentPalette =
+    PALETTES.find((p) => p.id === settings.palette) ?? PALETTES[0];
+  const customHue = settings.customTheme?.hue ?? currentPalette.hue;
+  const customLight = settings.customTheme?.lightness ?? 0.55;
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -261,16 +266,82 @@ export function SettingsDialog() {
                   type="button"
                   aria-label={p.name}
                   title={p.name}
-                  onClick={() => updateSettings({ palette: p.id })}
+                  onClick={() =>
+                    updateSettings({ palette: p.id, customTheme: null })
+                  }
                   className={[
                     "size-8 rounded-full border-2 transition-transform",
-                    settings.palette === p.id
+                    settings.palette === p.id && !settings.customTheme
                       ? "scale-110 border-foreground"
                       : "border-transparent hover:scale-110",
                   ].join(" ")}
                   style={{ backgroundColor: p.vars["--primary"] }}
                 />
               ))}
+              <button
+                type="button"
+                aria-label="custom accent"
+                title="custom accent"
+                onClick={() =>
+                  settings.customTheme ??
+                  updateSettings({
+                    customTheme: { hue: customHue, lightness: customLight },
+                  })
+                }
+                className={[
+                  "size-8 rounded-full border-2 transition-transform",
+                  settings.customTheme
+                    ? "scale-110 border-foreground"
+                    : "border-transparent hover:scale-110",
+                ].join(" ")}
+                style={{
+                  background: `oklch(${customLight} 0.2 ${customHue})`,
+                }}
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="settings-hue" className="font-mono">
+                  Hue
+                </Label>
+                <span className="font-mono text-sm text-typer-untyped tabular-nums">
+                  {Math.round(customHue)}°
+                </span>
+              </div>
+              <Slider
+                id="settings-hue"
+                aria-label="Accent hue"
+                min={0}
+                max={360}
+                step={1}
+                value={[customHue]}
+                onValueChange={([v]) =>
+                  updateSettings({
+                    customTheme: { hue: v, lightness: customLight },
+                  })
+                }
+              />
+              <div className="flex items-center justify-between">
+                <Label htmlFor="settings-lightness" className="font-mono">
+                  Lightness
+                </Label>
+                <span className="font-mono text-sm text-typer-untyped tabular-nums">
+                  {Math.round(customLight * 100)}%
+                </span>
+              </div>
+              <Slider
+                id="settings-lightness"
+                aria-label="Accent lightness"
+                min={0.2}
+                max={0.8}
+                step={0.01}
+                value={[customLight]}
+                onValueChange={([v]) =>
+                  updateSettings({
+                    customTheme: { hue: customHue, lightness: v },
+                  })
+                }
+              />
             </div>
           </div>
 

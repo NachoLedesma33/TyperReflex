@@ -11,6 +11,7 @@ export type PaletteId =
 export interface Palette {
   id: PaletteId;
   name: string;
+  hue: number;
   vars: Record<string, string>;
 }
 
@@ -18,6 +19,7 @@ export const PALETTES: Palette[] = [
   {
     id: "crimson",
     name: "Crimson",
+    hue: 22,
     vars: {
       "--primary": "oklch(0.52 0.22 22)",
       "--ring": "oklch(0.52 0.22 22)",
@@ -30,6 +32,7 @@ export const PALETTES: Palette[] = [
   {
     id: "ocean",
     name: "Ocean",
+    hue: 250,
     vars: {
       "--primary": "oklch(0.52 0.14 250)",
       "--ring": "oklch(0.52 0.14 250)",
@@ -42,6 +45,7 @@ export const PALETTES: Palette[] = [
   {
     id: "forest",
     name: "Forest",
+    hue: 150,
     vars: {
       "--primary": "oklch(0.52 0.13 150)",
       "--ring": "oklch(0.52 0.13 150)",
@@ -54,6 +58,7 @@ export const PALETTES: Palette[] = [
   {
     id: "violet",
     name: "Violet",
+    hue: 290,
     vars: {
       "--primary": "oklch(0.52 0.18 290)",
       "--ring": "oklch(0.52 0.18 290)",
@@ -66,6 +71,7 @@ export const PALETTES: Palette[] = [
   {
     id: "amber",
     name: "Amber",
+    hue: 75,
     vars: {
       "--primary": "oklch(0.55 0.15 75)",
       "--ring": "oklch(0.55 0.15 75)",
@@ -78,6 +84,7 @@ export const PALETTES: Palette[] = [
   {
     id: "matrix",
     name: "Matrix",
+    hue: 140,
     vars: {
       "--primary": "oklch(0.62 0.15 140)",
       "--ring": "oklch(0.62 0.15 140)",
@@ -90,6 +97,7 @@ export const PALETTES: Palette[] = [
   {
     id: "gruvbox",
     name: "Gruvbox",
+    hue: 55,
     vars: {
       "--primary": "oklch(0.66 0.13 55)",
       "--ring": "oklch(0.66 0.13 55)",
@@ -137,6 +145,11 @@ export const FONT_OPTIONS: { id: FontId; name: string }[] = [
   { id: "space", name: "Space Mono" },
 ];
 
+export interface CustomTheme {
+  hue: number;
+  lightness: number;
+}
+
 export interface Settings {
   fontFamily: FontId;
   fontSize: number;
@@ -150,6 +163,7 @@ export interface Settings {
   strictMode: boolean;
   language: Language;
   accentInsensitive: boolean;
+  customTheme: CustomTheme | null;
 }
 
 const STORAGE_KEY = "typerreflex-settings";
@@ -168,6 +182,7 @@ export const DEFAULT_SETTINGS: Settings = {
   strictMode: false,
   language: "en",
   accentInsensitive: false,
+  customTheme: null,
 };
 
 export function loadSettings(): Settings {
@@ -182,7 +197,23 @@ export function loadSettings(): Settings {
     const lang = parsed.language;
     const language: Language =
       lang !== undefined && LANGUAGES.some((l) => l.id === lang) ? lang : "en";
-    return { ...DEFAULT_SETTINGS, ...parsed, language };
+    let customTheme: CustomTheme | null = null;
+    const ct = parsed.customTheme;
+    if (
+      ct !== undefined &&
+      ct !== null &&
+      typeof ct === "object" &&
+      typeof ct.hue === "number" &&
+      typeof ct.lightness === "number" &&
+      Number.isFinite(ct.hue) &&
+      Number.isFinite(ct.lightness)
+    ) {
+      customTheme = {
+        hue: Math.max(0, Math.min(360, ct.hue)),
+        lightness: Math.max(0.2, Math.min(0.8, ct.lightness)),
+      };
+    }
+    return { ...DEFAULT_SETTINGS, ...parsed, language, customTheme };
   } catch {
     return DEFAULT_SETTINGS;
   }
@@ -230,6 +261,14 @@ export function applyCssVars(settings: Settings) {
     PALETTES.find((p) => p.id === settings.palette) ?? PALETTES[0];
   for (const [key, value] of Object.entries(palette.vars)) {
     root.style.setProperty(key, value);
+  }
+
+  if (settings.customTheme) {
+    const { hue, lightness } = settings.customTheme;
+    const accent = `oklch(${lightness} 0.2 ${hue})`;
+    root.style.setProperty("--primary", accent);
+    root.style.setProperty("--ring", accent);
+    root.style.setProperty("--typer-caret", accent);
   }
 }
 

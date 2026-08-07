@@ -82,6 +82,27 @@ describe("loadSettings", () => {
     window.localStorage.setItem(STORAGE_KEY, "{not-json");
     expect(loadSettings()).toEqual(DEFAULT_SETTINGS);
   });
+
+  it("defaults to no custom theme", () => {
+    expect(loadSettings().customTheme).toBeNull();
+  });
+
+  it("loads and clamps a stored custom theme", () => {
+    window.localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ customTheme: { hue: 999, lightness: 0.1 } })
+    );
+    const s = loadSettings();
+    expect(s.customTheme).toEqual({ hue: 360, lightness: 0.2 });
+  });
+
+  it("ignores a malformed stored custom theme", () => {
+    window.localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ customTheme: { hue: "red" } })
+    );
+    expect(loadSettings().customTheme).toBeNull();
+  });
 });
 
 describe("applyCssVars", () => {
@@ -115,6 +136,27 @@ describe("applyCssVars", () => {
     expect(
       document.documentElement.style.getPropertyValue("--primary")
     ).toBeTruthy();
+  });
+
+  it("overrides the accent vars with a custom theme", () => {
+    applyCssVars({
+      ...DEFAULT_SETTINGS,
+      palette: "matrix",
+      customTheme: { hue: 220, lightness: 0.6 },
+    });
+    const root = document.documentElement;
+    expect(root.style.getPropertyValue("--primary")).toBe("oklch(0.6 0.2 220)");
+    expect(root.style.getPropertyValue("--ring")).toBe("oklch(0.6 0.2 220)");
+    expect(root.style.getPropertyValue("--typer-caret")).toBe(
+      "oklch(0.6 0.2 220)"
+    );
+  });
+
+  it("keeps the palette accent when no custom theme is set", () => {
+    applyCssVars({ ...DEFAULT_SETTINGS, palette: "matrix" });
+    expect(document.documentElement.style.getPropertyValue("--primary")).toBe(
+      "oklch(0.62 0.15 140)"
+    );
   });
 });
 
