@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import * as React from "react";
 import { sanitizeShortcuts, type ShortcutMap } from "@/lib/shortcuts";
+import { syncThemeColor } from "@/lib/theme-color";
 import { LANGUAGES, type Language } from "@/lib/words";
 
 export { LANGUAGES };
@@ -337,6 +338,7 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
 
   React.useEffect(() => {
     applyCssVars(settings);
+    syncThemeColor();
   }, [settings]);
 
   const value = React.useMemo(

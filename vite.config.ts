@@ -27,8 +27,8 @@ export default defineConfig({
         name: "TyperReflex",
         short_name: "TyperReflex",
         description: "Minimal typing speed test",
-        theme_color: "#f2f2f2",
-        background_color: "#f2f2f2",
+        theme_color: "#0d0505",
+        background_color: "#0d0505",
         display: "standalone",
         start_url: "/",
         icons: [

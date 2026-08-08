@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/pwa-64x64.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon-180x180.png" />
-    <meta name="theme-color" content="#f2f2f2" />
+    <meta name="theme-color" content="#eeeeee" />
     <meta name="description" content="Minimal typing speed test" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link
@@ -29,6 +29,13 @@
           var resolved =
             stored === "dark" || stored === "light" ? stored : "light";
           document.documentElement.classList.add(resolved);
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) {
+            meta.setAttribute(
+              "content",
+              resolved === "dark" ? "#0d0505" : "#eeeeee"
+            );
+          }
         } catch (e) {}
       })();
     </script>
