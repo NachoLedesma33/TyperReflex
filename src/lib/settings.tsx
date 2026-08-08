@@ -1,5 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import * as React from "react";
+import { sanitizeShortcuts, type ShortcutMap } from "@/lib/shortcuts";
 import { LANGUAGES, type Language } from "@/lib/words";
 
 export { LANGUAGES };
@@ -182,6 +183,7 @@ export interface Settings {
   language: Language;
   accentInsensitive: boolean;
   customTheme: CustomTheme | null;
+  shortcuts: ShortcutMap;
 }
 
 const STORAGE_KEY = "typerreflex-settings";
@@ -202,6 +204,7 @@ export const DEFAULT_SETTINGS: Settings = {
   language: "en",
   accentInsensitive: false,
   customTheme: null,
+  shortcuts: {},
 };
 
 export function loadSettings(): Settings {
@@ -218,6 +221,7 @@ export function loadSettings(): Settings {
       lang !== undefined && LANGUAGES.some((l) => l.id === lang) ? lang : "en";
     const ligatures =
       typeof parsed.ligatures === "boolean" ? parsed.ligatures : false;
+    const shortcuts = sanitizeShortcuts(parsed.shortcuts);
     let customTheme: CustomTheme | null = null;
     const ct = parsed.customTheme;
     if (
@@ -234,7 +238,14 @@ export function loadSettings(): Settings {
         lightness: Math.max(0.2, Math.min(0.8, ct.lightness)),
       };
     }
-    return { ...DEFAULT_SETTINGS, ...parsed, language, customTheme, ligatures };
+    return {
+      ...DEFAULT_SETTINGS,
+      ...parsed,
+      language,
+      customTheme,
+      ligatures,
+      shortcuts,
+    };
   } catch {
     return DEFAULT_SETTINGS;
   }

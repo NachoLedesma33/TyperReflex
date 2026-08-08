@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 
+import { ShortcutManager } from "@/components/ShortcutManager";
 import { TypingTest } from "@/components/TypingTest";
 import { getStats } from "@/lib/stats";
 import { cn } from "@/lib/utils";
@@ -97,6 +98,7 @@ function App() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Splash visible={splashVisible} />
+      <ShortcutManager />
 
       {/* Header – full-width so title/menu hug their side margins */}
       <header className="relative z-10 w-full px-6 md:px-10 py-5 flex items-center justify-between gap-4 shrink-0">

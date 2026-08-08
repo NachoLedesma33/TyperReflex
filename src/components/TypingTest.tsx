@@ -12,6 +12,7 @@ import { generateWords, LANGUAGES, type Language } from "@/lib/words";
 import { cn } from "@/lib/utils";
 import { useSettings } from "@/lib/settings";
 import { playErrorSound, playKeySound } from "@/lib/sound";
+import { SHORTCUT_EVENT } from "@/lib/shortcuts";
 import {
   calcResults,
   charsMatch,
@@ -1080,69 +1081,56 @@ export function TypingTest() {
     [resetTest, pauseTest, resumeTest]
   );
 
-  // Idle shortcuts (p/n/c/l/m, 1-4) live on the document: typing always wins in
-  // the focused input, so these only apply when focus is somewhere else.
+  // Configurable shortcuts (defaults: none) are dispatched globally by
+  // ShortcutManager as `typerreflex-shortcut` events; typing actions here only
+  // apply while idle. The manager already ignores editable targets, so typing
+  // always wins.
   useEffect(() => {
-    const onShortcut = (e: KeyboardEvent) => {
+    const onShortcut = (e: Event) => {
       if (gameStatusRef.current !== "idle") return;
-      if (e.ctrlKey || e.metaKey || e.altKey) return;
-      const target = document.activeElement;
-      if (
-        target instanceof HTMLElement &&
-        (target.tagName === "INPUT" ||
-          target.tagName === "TEXTAREA" ||
-          target.tagName === "SELECT" ||
-          target.isContentEditable)
-      ) {
-        return;
-      }
-      const k = e.key.toLowerCase();
-      const digit = Number(k);
-      if (k >= "1" && k <= "4" && !Number.isNaN(digit)) {
-        e.preventDefault();
-        const idx = digit - 1;
-        if (modeRef.current === "time" && idx < TIME_OPTIONS.length) {
-          setTimeOption(TIME_OPTIONS[idx]);
-        } else if (modeRef.current === "words" && idx < WORD_OPTIONS.length) {
-          setWordOption(WORD_OPTIONS[idx]);
-        }
-        return;
-      }
-      switch (k) {
-        case "p":
-          e.preventDefault();
+      const action = (e as CustomEvent<string>).detail;
+      switch (action) {
+        case "punctuation":
           setPunctuation((v) => !v);
           break;
-        case "n":
-          e.preventDefault();
+        case "numbers":
           setNumbers((v) => !v);
           break;
-        case "c":
-          e.preventDefault();
+        case "capitals":
           setCapitals((v) => !v);
           break;
-        case "l":
-          e.preventDefault();
+        case "longWords":
           toggleLong();
           break;
-        case "m":
-          e.preventDefault();
+        case "modeCycle":
           setMode((m) =>
             m === "time" ? "words" : m === "words" ? "zen" : "time"
           );
           break;
-        case "i": {
-          e.preventDefault();
+        case "languageCycle": {
           const langs: Language[] = ["en", "es", "pt"];
           const idx = langs.indexOf(languageRef.current);
           const next = langs[(idx + 1) % langs.length] ?? "en";
           setLanguage(next);
           break;
         }
+        case "option1":
+        case "option2":
+        case "option3":
+        case "option4": {
+          const digit = Number(action.replace("option", ""));
+          const idx = digit - 1;
+          if (modeRef.current === "time" && idx < TIME_OPTIONS.length) {
+            setTimeOption(TIME_OPTIONS[idx]);
+          } else if (modeRef.current === "words" && idx < WORD_OPTIONS.length) {
+            setWordOption(WORD_OPTIONS[idx]);
+          }
+          break;
+        }
       }
     };
-    window.addEventListener("keydown", onShortcut);
-    return () => window.removeEventListener("keydown", onShortcut);
+    window.addEventListener(SHORTCUT_EVENT, onShortcut);
+    return () => window.removeEventListener(SHORTCUT_EVENT, onShortcut);
   }, [toggleLong, setLanguage]);
 
   // ── Click / key to focus ────────────────────────────────────────────────────

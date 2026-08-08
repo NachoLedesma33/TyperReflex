@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { RotateCcw, Save, Settings2, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Keyboard, RotateCcw, Save, Settings2, Trash2, X } from "lucide-react";
 
 import { ToolBtn } from "@/components/ToolBtn";
 import {
@@ -22,6 +22,12 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import {
+  bindingLabel,
+  eventToBinding,
+  SHORTCUT_ACTIONS,
+  type ShortcutActionId,
+} from "@/lib/shortcuts";
+import {
   deletePreset,
   FONT_OPTIONS,
   FONT_STACKS,
@@ -39,6 +45,39 @@ export function SettingsDialog() {
   const { settings, updateSettings, resetSettings } = useSettings();
   const [presets, setPresets] = useState<SettingsPreset[]>(() => getPresets());
   const [presetName, setPresetName] = useState("");
+  const [recording, setRecording] = useState<ShortcutActionId | null>(null);
+
+  // Capture the next keystroke as the shortcut for the action being recorded.
+  // Esc cancels, Backspace/Delete clears the binding. preventDefault keeps the
+  // capture key from triggering other global shortcuts or typing.
+  useEffect(() => {
+    if (!recording) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.key === "Escape") {
+        setRecording(null);
+        return;
+      }
+      if (e.key === "Backspace" || e.key === "Delete") {
+        const next = { ...settings.shortcuts };
+        delete next[recording];
+        updateSettings({ shortcuts: next });
+        setRecording(null);
+        return;
+      }
+      const binding = eventToBinding(e);
+      if (!binding) {
+        return; // a bare modifier press — keep waiting for the key
+      }
+      updateSettings({
+        shortcuts: { ...settings.shortcuts, [recording]: binding },
+      });
+      setRecording(null);
+    };
+    window.addEventListener("keydown", onKeyDown, true);
+    return () => window.removeEventListener("keydown", onKeyDown, true);
+  }, [recording, settings.shortcuts, updateSettings]);
 
   const currentPalette =
     PALETTES.find((p) => p.id === settings.palette) ?? PALETTES[0];
@@ -353,6 +392,72 @@ export function SettingsDialog() {
                   })
                 }
               />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <Keyboard className="size-4 text-typer-untyped" />
+              <Label className="font-mono">Keyboard shortcuts</Label>
+            </div>
+            <p className="text-xs text-typer-untyped leading-relaxed">
+              Nothing is bound by default. Click an action, then press the keys
+              to record a shortcut. Esc cancels, Backspace clears.
+            </p>
+            <div className="flex flex-col gap-1">
+              {SHORTCUT_ACTIONS.map((action) => {
+                const current = settings.shortcuts[action.id];
+                const isRecording = recording === action.id;
+                return (
+                  <div
+                    key={action.id}
+                    className="flex items-center justify-between gap-2 rounded-lg border border-border/60 px-3 py-1.5"
+                  >
+                    <div className="flex flex-col">
+                      <span className="font-mono text-sm">{action.label}</span>
+                      {action.description && (
+                        <span className="text-xs text-typer-untyped">
+                          {action.description}
+                        </span>
+                      )}
+                    </div>
+                    <ToolBtn
+                      variant={
+                        isRecording ? "primary" : current ? "outline" : "ghost"
+                      }
+                      size="xs"
+                      title={
+                        isRecording
+                          ? "press keys…"
+                          : current
+                            ? "change shortcut"
+                            : "set shortcut"
+                      }
+                      ariaLabel={
+                        isRecording
+                          ? `Cancel recording ${action.label}`
+                          : `Set shortcut ${action.label}`
+                      }
+                      onClick={() =>
+                        setRecording(isRecording ? null : action.id)
+                      }
+                    >
+                      {isRecording ? (
+                        <span className="inline-flex items-center gap-1.5">
+                          <X className="size-3" />
+                          press…
+                        </span>
+                      ) : current ? (
+                        <kbd className="font-mono text-xs px-1.5 py-0.5 rounded bg-muted border border-border">
+                          {bindingLabel(current)}
+                        </kbd>
+                      ) : (
+                        "unset"
+                      )}
+                    </ToolBtn>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
