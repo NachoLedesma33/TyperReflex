@@ -163,13 +163,13 @@ describe("TypingTest", () => {
     expect(screen.getByText("25 words")).toBeInTheDocument();
   });
 
-  it("changes the duration with the number shortcuts while idle and not typing", async () => {
-    const user = setupUser();
+  it("changes the duration with the option shortcut event while idle", () => {
     renderTypingTest();
 
-    // Typing always wins in the focused input, so shortcuts need focus elsewhere
-    screen.getByLabelText("Typing input").blur();
-    await user.keyboard("3");
+    fireEvent(
+      window,
+      new CustomEvent("typerreflex-shortcut", { detail: "option3" })
+    );
 
     expect(screen.getByText("60s")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "60" })).toHaveAttribute(
@@ -178,17 +178,20 @@ describe("TypingTest", () => {
     );
   });
 
-  it("types a shortcut letter in the focused input without triggering the shortcut", async () => {
+  it("ignores shortcut events while running", async () => {
     const user = setupUser();
     renderTypingTest();
 
-    await user.click(screen.getByRole("button", { name: "words" }));
     const input = screen.getByLabelText("Typing input");
     input.focus();
-    await user.keyboard("m");
+    await user.keyboard("h");
 
-    expect(input).toHaveValue("m");
-    expect(screen.getByRole("button", { name: "words" })).toHaveAttribute(
+    fireEvent(
+      window,
+      new CustomEvent("typerreflex-shortcut", { detail: "modeCycle" })
+    );
+
+    expect(screen.getByRole("button", { name: "time" })).toHaveAttribute(
       "aria-pressed",
       "true"
     );

@@ -39,17 +39,13 @@ describe("ThemeProvider", () => {
     expect(document.documentElement).toHaveClass("light");
   });
 
-  it("toggles between dark and light with the d key and persists it", async () => {
+  it("does not react to any key (shortcuts moved to ShortcutManager)", async () => {
     const user = userEvent.setup();
     renderProvider({ defaultTheme: "light" });
 
     await user.keyboard("{d}");
-    expect(document.documentElement).toHaveClass("dark");
-    expect(localStorage.getItem(STORAGE_KEY)).toBe("dark");
-
-    await user.keyboard("{d}");
     expect(document.documentElement).toHaveClass("light");
-    expect(localStorage.getItem(STORAGE_KEY)).toBe("light");
+    expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
   });
 
   it("resolves the system theme when default is system", () => {
@@ -65,18 +61,5 @@ describe("ThemeProvider", () => {
     localStorage.setItem(STORAGE_KEY, "dark");
     renderProvider({ defaultTheme: "light" });
     expect(document.documentElement).toHaveClass("dark");
-  });
-
-  it("does not toggle when typing inside an editable target", async () => {
-    const user = userEvent.setup();
-    renderProvider({ defaultTheme: "light" });
-    const input = document.createElement("input");
-    document.body.appendChild(input);
-    input.focus();
-
-    await user.keyboard("d");
-    expect(document.documentElement).toHaveClass("light");
-    expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
-    input.remove();
   });
 });

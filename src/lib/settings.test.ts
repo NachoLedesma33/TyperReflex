@@ -137,6 +137,29 @@ describe("loadSettings", () => {
       expect(FONT_METRICS[f.id].weight).toMatch(/^4\d\d$/);
     }
   });
+
+  it("defaults to no keyboard shortcuts", () => {
+    expect(loadSettings().shortcuts).toEqual({});
+  });
+
+  it("loads and canonicalizes stored shortcuts", () => {
+    window.localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ shortcuts: { theme: "shift+ctrl+D", numbers: "n" } })
+    );
+    expect(loadSettings().shortcuts).toEqual({
+      theme: "ctrl+shift+d",
+      numbers: "n",
+    });
+  });
+
+  it("drops invalid stored shortcuts", () => {
+    window.localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ shortcuts: { theme: "not-a-binding", bogus: "x" } })
+    );
+    expect(loadSettings().shortcuts).toEqual({});
+  });
 });
 
 describe("applyCssVars", () => {
