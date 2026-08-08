@@ -204,3 +204,39 @@ test("switching font applies its letter-spacing metric", async ({ page }) => {
     )
     .toBe("0.03em");
 });
+
+test("theme-color meta tracks the light/dark toggle", async ({ page }) => {
+  await page.goto("/");
+  const meta = page.locator('meta[name="theme-color"]');
+
+  await expect(meta).toHaveAttribute("content", "#eeeeee");
+
+  await page.getByRole("button", { name: "Toggle theme" }).click();
+  await page.getByRole("menuitem", { name: "Dark" }).click();
+  await expect(meta).toHaveAttribute("content", "#0d0505");
+
+  await page.getByRole("button", { name: "Toggle theme" }).click();
+  await page.getByRole("menuitem", { name: "Light" }).click();
+  await expect(meta).toHaveAttribute("content", "#eeeeee");
+});
+
+test("theme-color meta matches the lavender background theme", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    localStorage.setItem("typerreflex-theme", "dark");
+    localStorage.setItem(
+      "typerreflex-settings",
+      JSON.stringify({ themeId: "lavender" })
+    );
+  });
+
+  await page.goto("/");
+  const meta = page.locator('meta[name="theme-color"]');
+  await expect(page.locator("html")).toHaveClass(/theme-lavender/);
+  await expect(meta).toHaveAttribute("content", "#18141e");
+
+  await page.getByRole("button", { name: "Toggle theme" }).click();
+  await page.getByRole("menuitem", { name: "Light" }).click();
+  await expect(meta).toHaveAttribute("content", "#bab5c2");
+});
