@@ -3,6 +3,13 @@ import { test, expect } from "@playwright/test";
 test("theme toggles with the d key and persists after reload", async ({
   page,
 }) => {
+  // Bind the theme shortcut first: nothing is configured by default.
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "typerreflex-settings",
+      JSON.stringify({ shortcuts: { theme: "d" } })
+    );
+  });
   await page.goto("/");
   await expect(page.locator("html")).toHaveClass(/light/);
 

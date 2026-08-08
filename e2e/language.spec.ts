@@ -35,6 +35,13 @@ test("language persists after reload", async ({ page }) => {
 });
 
 test("language cycles with the i shortcut while idle", async ({ page }) => {
+  // Bind the language-cycle shortcut first: nothing is configured by default.
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "typerreflex-settings",
+      JSON.stringify({ shortcuts: { languageCycle: "i" } })
+    );
+  });
   await page.goto("/");
   const esPool = new Set(getWordPool("es", false));
 
