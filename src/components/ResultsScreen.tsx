@@ -14,6 +14,7 @@ import { Check, Copy, Download, RotateCcw, Share2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { useCountUp } from "@/lib/useCountUp";
+import { formatTime } from "@/lib/time";
 import type { HistoryEntry } from "@/lib/history";
 import { getHistory } from "@/lib/history";
 import { KeyboardHeatmap } from "@/components/KeyboardHeatmap";
@@ -312,7 +313,7 @@ export const ResultsScreen = memo(function ResultsScreen({
             label: "chars",
             value: `${results.correctChars}/${results.incorrectChars}/${results.extraChars}`,
           },
-          { label: "time", value: `${results.time}s` },
+          { label: "time", value: formatTime(results.time) },
           { label: "mode", value: modeLabel },
           { label: "consistency", value: consistency ?? "--" },
           {
