@@ -63,7 +63,7 @@ describe("ResultsScreen", () => {
     expect(screen.getByText("words 24/25")).toBeInTheDocument();
     expect(screen.getByText("300/12/2")).toBeInTheDocument();
     expect(screen.getByText("25 words")).toBeInTheDocument();
-    expect(screen.getByText("60s")).toBeInTheDocument();
+    expect(screen.getByText("00:01:00")).toBeInTheDocument();
     expect(screen.getByText("not enough data to plot")).toBeInTheDocument();
   });
 
